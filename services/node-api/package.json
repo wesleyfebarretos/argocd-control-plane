@@ -1,19 +1,19 @@
 {
-  "name": "node-api",
-  "version": "1.0.0",
+  "author": "WF",
   "description": "test purpose API",
-  "main": "index.js",
   "engines": {
     "node": "24.16.0"
+  },
+  "license": "ISC",
+  "main": "index.js",
+  "name": "node-api",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wesleyfebarretos/gitops"
   },
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/wesleyfebarretos/gitops"
-  },
-  "author": "WF",
-  "license": "ISC"
+  "version": "1.0.0"
 }
