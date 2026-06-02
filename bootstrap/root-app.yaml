@@ -9,7 +9,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/wesleyfebarretos/argocd-gitops.git
+    repoURL: https://github.com/wesleyfebarretos/gitops.git
     targetRevision: main
     path: argocd/apps
 
