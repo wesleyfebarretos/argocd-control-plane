@@ -6,6 +6,6 @@ fullnameOverride: acme-stg
 replicaCount: 2
 
 image:
-  repository: acme-stg
+  repository: golang-api
   tag: latest
   pullPolicy: always
