@@ -9,11 +9,12 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/wesleyfebarretos/gitops.git
-    targetRevision: main
-    path: platform/argocd
-    directory:
-      recurse: true
+    - repoURL: https://github.com/wesleyfebarretos/gitops.git
+      targetRevision: main
+      path: platform/argocd
+    - repoURL: https://github.com/wesleyfebarretos/gitops.git
+      targetRevision: main
+      path: platform/argocd/bootstrap
 
   destination:
     server: https://kubernetes.default.svc

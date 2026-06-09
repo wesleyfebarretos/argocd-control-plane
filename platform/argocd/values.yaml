@@ -55,7 +55,7 @@ server:
         namespace: envoy-gateway-system
         sectionName: https
     hostnames:
-      - argocd.local
+      - grpc.argocd.local
 
 applicationSet:
   replicas: 1
