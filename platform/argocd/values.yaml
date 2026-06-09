@@ -48,14 +48,14 @@ server:
               type: PathPrefix
               value: /
 
-  grpcroute:
-    enabled: true
-    parentRefs:
-      - name: platform
-        namespace: envoy-gateway-system
-        sectionName: https
-    hostnames:
-      - grpc.argocd.local
+  # grpcroute:
+  #   enabled: true
+  #   parentRefs:
+  #     - name: platform
+  #       namespace: envoy-gateway-system
+  #       sectionName: https
+  #   hostnames:
+  #     - grpc.argocd.local
 
 applicationSet:
   replicas: 1
