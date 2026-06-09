@@ -1,7 +1,6 @@
-cert-manager:
-  crds:
-    enabled: true
-    keep: true
+crds:
+  enabled: true
+  keep: true
 
-  prometheus:
-    enabled: false
+prometheus:
+  enabled: false

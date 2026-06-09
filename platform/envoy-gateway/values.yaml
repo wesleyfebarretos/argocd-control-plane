@@ -1,9 +1,8 @@
-gateway-helm:
-  deployment:
-    envoyGateway:
-      resources:
-        limits:
-          memory: 1024Mi
-        requests:
-          cpu: 100m
-          memory: 256Mi
+deployment:
+  envoyGateway:
+    resources:
+      limits:
+        memory: 1024Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
