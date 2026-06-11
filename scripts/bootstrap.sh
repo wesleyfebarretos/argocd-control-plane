@@ -14,7 +14,6 @@ else
     kind create cluster --name "${CLUSTER_NAME}" --config ../platform/kind/kind-config.yaml
 fi
 
-kubectl apply --server-side -k ../platform/crds
 kustomize build --enable-helm ../platform/argocd | kubectl apply --server-side -f -
 
 echo "==> Waiting for ArgoCD server to be ready..."
