@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: platform-metrics-server
-  namespace: kube-system
+  namespace: argocd
 spec:
   project: default
 
