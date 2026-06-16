@@ -8,6 +8,10 @@ configs:
     create: true   # required — tells the chart to create the ConfigMap
 
   cm:
+    admin.enabled: false
+
+    ## OIDC settings
+
     create: true
     exec.enabled: "true"
     timeout.reconciliation: 180s
