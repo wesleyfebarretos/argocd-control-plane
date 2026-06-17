@@ -21,8 +21,8 @@ configs:
           config:
             clientID: Ov23cto1ueChXRpxULeK
             clientSecret: $dex.github.clientSecret
-          orgs:
-            - name: argocd-platform
+            orgs:
+              - name: argocd-platform
 
     
     exec.enabled: "true"
