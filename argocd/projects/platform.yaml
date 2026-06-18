@@ -32,7 +32,7 @@ spec:
       kind: "*"
 
   orphanedResources:
-    warn: true
+    warn: false
 
   roles:
     - name: admin
