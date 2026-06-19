@@ -6,6 +6,7 @@ configs:
   # server.insecure is now set via server.extraArgs below
   params:
     create: true   # required — tells the chart to create the ConfigMap
+    controller.diff.server.side: "true"
 
   cm:
     create: true
@@ -24,7 +25,7 @@ configs:
             orgs:
               - name: argocd-platform
 
-    
+
     exec.enabled: "true"
 
     timeout.reconciliation: 180s
