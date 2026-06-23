@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: cert-manager
-  namespace: argocd
+  namespace: platform
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 spec:
