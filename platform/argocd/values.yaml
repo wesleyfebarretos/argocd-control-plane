@@ -1,18 +1,15 @@
 global:
-  domain: argocd.internal   # change to your domain
-
+  domain: argocd.internal # change to your domain
 configs:
   # configs.params keys must NOT use dot-notation in chart >= 7.x
   # server.insecure is now set via server.extraArgs below
   params:
-    create: true   # required — tells the chart to create the ConfigMap
-    controller.diff.server.side: "true"
-
+    create: true # required — tells the chart to create the ConfigMap
+    controller.diff.server.side: 'true'
+    application.namespaces: 'applications'
   cm:
     create: true
-
-    admin.enabled: "false"
-
+    admin.enabled: 'false'
     ## OIDC settings
     dex.config: |
       connectors:
@@ -24,17 +21,11 @@ configs:
             clientSecret: $dex.github.clientSecret
             orgs:
               - name: argocd-platform
-
-
-    exec.enabled: "true"
-
+    exec.enabled: 'true'
     timeout.reconciliation: 180s
-
     application.resourceTrackingMethod: annotation
-
     # Enable kustomize build options to allow the use of helm charts
-    kustomize.buildOptions: "--enable-helm --load-restrictor LoadRestrictionsNone"
-
+    kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
   rbac:
     create: true
     scopes: '[groups, email]'
@@ -45,19 +36,13 @@ configs:
       p, role:admin, repositories, *, *, allow
       p, role:admin, projects,     *, *, allow
       p, role:admin, exec, *, */*, allow
-
       g, wesleyfebarretos@gmail.com, role:admin
-
 server:
   replicas: 1
-
   # TLS terminates at the platform Gateway; Argo CD serves plain HTTP internally.
-  extraArgs:
-    - --insecure
-
+  extraArgs: [--insecure]
   ingress:
     enabled: false
-
   httproute:
     enabled: true
     parentRefs:
@@ -66,31 +51,25 @@ server:
         name: platform
         namespace: envoy-gateway-system
         sectionName: https
-    hostnames:
-      - argocd.internal
+    hostnames: [argocd.internal]
     rules:
       - matches:
           - path:
               type: PathPrefix
               value: /
-
-  # grpcroute:
-  #   enabled: true
-  #   parentRefs:
-  #     - name: platform
-  #       namespace: envoy-gateway-system
-  #       sectionName: https
-  #   hostnames:
-  #     - grpc.argocd.internal
-
+              # grpcroute:
+              #   enabled: true
+              #   parentRefs:
+              #     - name: platform
+              #       namespace: envoy-gateway-system
+              #       sectionName: https
+              #   hostnames:
+              #     - grpc.argocd.internal
 applicationSet:
   replicas: 1
-
 controller:
   replicas: 1
-
 redis:
   enabled: true
-
 notifications:
   enabled: true

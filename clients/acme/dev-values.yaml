@@ -1,9 +1,0 @@
-namespace: acme-dev
-
-nameOverride: acme-dev
-fullnameOverride: acme-dev
-replicaCount: 1
-image:
-  repository: golang-api
-  tag: latest
-  pullPolicy: Never

@@ -1,20 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: metrics-server
-  namespace: argocd
+  name: applications
+  namespace: applications
 spec:
-  project: platform
-
+  project: applications
   source:
-    repoURL: https://github.com/wesleyfebarretos/gitops.git
+    repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
     targetRevision: main
-    path: platform/metrics-server
-
+    path: argocd
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
-    namespace: kube-system
-
+    namespace: applications
   syncPolicy:
     automated:
       prune: false

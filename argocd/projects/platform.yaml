@@ -5,14 +5,9 @@ metadata:
   namespace: argocd
 spec:
   description: Platform team project with restricted repo and namespaces
-
   sourceRepos:
-    - https://github.com/wesleyfebarretos/gitops.git
-
-  sourceNamespaces:
-    - argocd
-    - platform
-
+    - https://github.com/wesleyfebarretos/argocd-control-plane.git
+  sourceNamespaces: [argocd, platform]
   destinations:
     - server: https://kubernetes.default.svc
       namespace: argocd
@@ -22,22 +17,16 @@ spec:
       namespace: envoy-gateway-system
     - server: https://kubernetes.default.svc
       namespace: kube-system
-
   clusterResourceWhitelist:
-    - group: "*"
-      kind: "*"
-
+    - group: '*'
+      kind: '*'
   namespaceResourceWhitelist:
-    - group: "*"
-      kind: "*"
-
+    - group: '*'
+      kind: '*'
   orphanedResources:
     warn: false
-
   roles:
     - name: admin
       description: Full access within platform project
-      policies:
-        - p, proj:platform:admin, applications, *, platform/*, allow
-      groups:
-        - wesleyfebarretos@gmail.com
+      policies: ['p, proj:platform:admin, applications, *, platform/*, allow']
+      groups: [wesleyfebarretos@gmail.com]

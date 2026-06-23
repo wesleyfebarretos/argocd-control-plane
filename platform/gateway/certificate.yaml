@@ -8,8 +8,7 @@ spec:
   issuerRef:
     kind: ClusterIssuer
     name: platform-selfsigned
-  dnsNames:
-    - argocd.internal
+  dnsNames: [argocd.internal]
   privateKey:
     algorithm: ECDSA
     size: 256

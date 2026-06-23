@@ -1,22 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: envoy-proxy
+  name: cert-manager
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: platform
-
   source:
-    repoURL: https://github.com/wesleyfebarretos/gitops.git
+    repoURL: https://github.com/wesleyfebarretos/argocd-control-plane.git
     targetRevision: main
-    path: platform/envoy-proxy
-
+    path: platform/cert-manager
   destination:
     server: https://kubernetes.default.svc
-    namespace: envoy-gateway-system
-
+    namespace: cert-manager
   syncPolicy:
     automated:
       prune: false

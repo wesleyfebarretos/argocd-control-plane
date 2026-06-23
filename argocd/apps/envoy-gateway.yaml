@@ -1,23 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root-app
+  name: envoy-gateway
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-options: Prune=false
+    argocd.argoproj.io/sync-wave: "1"
 spec:
-  project: default
+  project: platform
   source:
     repoURL: https://github.com/wesleyfebarretos/argocd-control-plane.git
     targetRevision: main
-    path: argocd
-    directory:
-      recurse: true
+    path: platform/envoy-gateway
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: envoy-gateway-system
   syncPolicy:
     automated:
       prune: false
       selfHeal: true
-    syncOptions: [CreateNamespace=true, ServerSideApply=true]
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

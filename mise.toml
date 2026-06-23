@@ -1,6 +1,4 @@
 [tools]
-helm = "4.2.0"
 kubectl = "1.36.1"
 pre-commit = '4.6.0'
-helm-docs = "1.14.2"
 kustomize = "5.8.1"
