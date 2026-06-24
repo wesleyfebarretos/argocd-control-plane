@@ -68,6 +68,7 @@ server:
               #   hostnames:
               #     - grpc.argocd.internal
 applicationSet:
+  allowAnyNamespace: true
   replicas: 1
 controller:
   replicas: 1
