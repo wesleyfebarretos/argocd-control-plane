@@ -8,6 +8,7 @@ configs:
     controller.diff.server.side: 'true'
     application.namespaces: 'platform,applications'
     applicationsetcontroller.namespaces: 'platform,applications'
+    applicationsetcontroller.enable.scm.providers: false
   cm:
     create: true
     admin.enabled: 'false'
