@@ -44,11 +44,15 @@ spec:
       kind: ConfigMap
     - group: ''
       kind: ServiceAccount
+    - group: ''
+      kind: Pod
     # apps/v1
     - group: apps
       kind: Deployment
     - group: apps
       kind: StatefulSet
+    - group: apps
+      kind: ReplicaSet
     # autoscaling/v2
     - group: autoscaling
       kind: HorizontalPodAutoscaler
