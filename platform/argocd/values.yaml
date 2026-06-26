@@ -31,8 +31,6 @@ configs:
             clientID: 96df4de94d47bd09774451f53083d434a2891f0e82010334a9a112b2c1354e67
             clientSecret: $dex.gitlab.clientSecret
             redirectURI: https://argocd.internal/api/dex/callback
-            scopes:
-              - read_user
             useLoginAsID: true
     exec.enabled: 'true'
     timeout.reconciliation: 180s
