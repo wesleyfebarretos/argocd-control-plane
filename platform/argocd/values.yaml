@@ -33,7 +33,7 @@ configs:
             redirectURI: https://argocd.internal/api/dex/callback
             useLoginAsID: true
             groups:
-              - argocd-platform
+              - argocd-labs/developers
     exec.enabled: 'true'
     timeout.reconciliation: 180s
     application.resourceTrackingMethod: annotation
