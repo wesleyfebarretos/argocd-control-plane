@@ -69,5 +69,6 @@ spec:
       description: Full access within applications project
       policies:
         - p, proj:applications:admin, applications, *, applications/*, allow
+        - p, proj:applications:admin, logs, get, applications/*, allow
       groups:
         - argocd-labs/developers
