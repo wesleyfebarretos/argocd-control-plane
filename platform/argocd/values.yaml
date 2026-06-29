@@ -49,7 +49,7 @@ configs:
       p, role:admin, repositories, *, *, allow
       p, role:admin, projects,     *, *, allow
       p, role:admin, exec, *, */*, allow
-      g, argocd-platform, role:admin
+      g, argocd-platform:admins, role:admin
 server:
   replicas: 1
   # TLS terminates at the platform Gateway; Argo CD serves plain HTTP internally.
