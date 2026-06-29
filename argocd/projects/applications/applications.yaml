@@ -70,5 +70,6 @@ spec:
       policies:
         - p, proj:applications:admin, applications, *, applications/*, allow
         - p, proj:applications:admin, logs, get, applications/*, allow
+        - p, proj:applications:admin, exec, create, applications/*, allow
       groups:
         - argocd-labs/developers
