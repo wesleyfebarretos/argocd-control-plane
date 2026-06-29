@@ -70,4 +70,4 @@ spec:
       policies:
         - p, proj:applications:admin, applications, *, applications/*, allow
       groups:
-        - wesleyfebarretos@gmail.com
+        - argocd-labs/developers
