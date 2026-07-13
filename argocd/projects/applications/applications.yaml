@@ -48,6 +48,8 @@ spec:
       kind: ServiceAccount
     - group: ''
       kind: Pod
+    - group: ''
+      kind: ResourceQuota
     # apps/v1
     - group: apps
       kind: Deployment
