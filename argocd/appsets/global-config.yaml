@@ -18,9 +18,9 @@ spec:
           project: "{{ index .path.segments 2 }}"
   template:
     metadata:
-      name: "{{ .values.namespace }}-configs"
+      name: "{{ .values.namespace }}-config"
       labels:
-        app.kubernetes.io/name: "{{ .values.namespace }}-configs"
+        app.kubernetes.io/name: "{{ .values.namespace }}-config"
         client: "{{ .values.client }}"
         project: "{{ .values.project }}"
     spec:
