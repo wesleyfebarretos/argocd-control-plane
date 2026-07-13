@@ -9,6 +9,7 @@ spec:
     - https://github.com/wesleyfebarretos/argocd-applications.git
   sourceNamespaces:
     - {{ include "project-template.namespace" . }}
+      server: https://kubernetes.default.svc
   destinations:
     - namespace: {{ include "project-template.namespace" . }}
   {{- with .Values.appProject }}
