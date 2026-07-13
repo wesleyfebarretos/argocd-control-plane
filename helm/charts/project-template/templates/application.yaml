@@ -1,27 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
-kind: ApplicationSet
+kind: Application
 metadata:
   name: {{ include "project-template.namespace" . }}
   namespace: {{ include "project-template.namespace" . }}
 spec:
-  goTemplate: true
-  generators:
-    - git:
-        repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
-        revision: main
-        directories:
-          - path: clients/{{ include "project-template.client" . }}/{{ include "project-template.project" . }}/overlays/*
-  template:
-    metadata:
-      name: {{ include "project-template.namespace" . }}
-    spec:
+  project: {{ include "project-template.namespace" . }}
+  source:
+    repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
+    path: '{{`{{ .path.path }}`}}'
+    targetRevision: main
+  destination:
       destination:
         namespace: {{ include "project-template.namespace" . }}
         server: 'https://kubernetes.default.svc'
       project: {{ include "project-template.namespace" . }}
       sources:
         - repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
-          path: '{{`{{ .path.path }}`}}'
+          path: clients/{{ include "project-template.client" . }}/{{ include "project-template.project" . }}/overlays/{{ include "project-template.environment" . }}
           targetRevision: main
       syncPolicy:
         automated:

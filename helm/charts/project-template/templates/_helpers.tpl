@@ -12,3 +12,8 @@
 {{- define "project-template.client" -}}
 {{- required "A valid client name is required" .Values.client -}}
 {{- end }}
+
+{{/* Name of the environment */}}
+{{- define "project-template.environment" -}}
+{{- required "A valid environment name is required" .Values.environment -}}
+{{- end }}

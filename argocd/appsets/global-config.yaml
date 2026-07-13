@@ -16,6 +16,7 @@ spec:
           namespace: "{{ index .path.segments 1}}-{{ index .path.segments 2}}-{{ index .path.segments 4}}"
           client: "{{ index .path.segments 1 }}"
           project: "{{ index .path.segments 2 }}"
+          environment: "{{ .path.basename }}"
   template:
     metadata:
       name: "{{ .values.namespace }}-config"
@@ -41,6 +42,8 @@ spec:
                 value: "{{ .values.client }}"
               - name: project
                 value: "{{ .values.project }}"
+              - name: environment
+                value: "{{ .values.environment }}"
         - repoURL: https://github.com/wesleyfebarretos/argocd-control-plane.git
           targetRevision: main
           ref: values
