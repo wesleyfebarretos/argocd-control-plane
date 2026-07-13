@@ -6,8 +6,8 @@ configs:
   params:
     create: true # required — tells the chart to create the ConfigMap
     controller.diff.server.side: 'true'
-    application.namespaces: 'platform,applications'
-    applicationsetcontroller.namespaces: 'platform,applications'
+    application.namespaces: '*'
+    applicationsetcontroller.namespaces: '*'
     applicationsetcontroller.enable.scm.providers: false
   cm:
     create: true
