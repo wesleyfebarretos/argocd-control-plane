@@ -7,22 +7,17 @@ spec:
   project: {{ include "project-template.namespace" . }}
   source:
     repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
-    path: '{{`{{ .path.path }}`}}'
+    path: clients/{{ include "project-template.client" . }}/{{ include "project-template.project" . }}/overlays/{{ include "project-template.environment" . }}
     targetRevision: main
   destination:
       destination:
         namespace: {{ include "project-template.namespace" . }}
         server: 'https://kubernetes.default.svc'
-      project: {{ include "project-template.namespace" . }}
-      sources:
-        - repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
-          path: clients/{{ include "project-template.client" . }}/{{ include "project-template.project" . }}/overlays/{{ include "project-template.environment" . }}
-          targetRevision: main
-      syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
-        syncOptions:
-          - CreateNamespace=true
-          - ServerSideApply=true
-          - ApplyOutOfSyncOnly=true
+  syncPolicy:
+    automated:
+        prune: true
+        selfHeal: true
+    syncOptions:
+        - CreateNamespace=true
+        - ServerSideApply=true
+        - ApplyOutOfSyncOnly=true
