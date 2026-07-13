@@ -1,0 +1,57 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: applications-global-config
+  namespace: platform
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
+        revision: main
+        directories:
+          - path: clients/*/*/overlays/*
+        values:
+          namespace: "{{ index .path.segments 1}}-{{ index .path.segments 2}}-{{ index .path.segments 4}}"
+          client: "{{ index .path.segments 1 }}"
+          project: "{{ index .path.segments 2 }}"
+  template:
+    metadata:
+      name: "{{ .values.namespace }}-configs"
+      labels:
+        app.kubernetes.io/name: "{{ .values.namespace }}-configs"
+        client: "{{ .values.client }}"
+        project: "{{ .values.project }}"
+    spec:
+      project: platform
+      sources:
+        - repoURL: https://github.com/wesleyfebarretos/argocd-control-plane.git
+          path: "helm/charts/project-template"
+          targetRevision: main
+          helm:
+            valueFiles:
+              - "$values/projects/{{ .values.project }}/values.yaml"
+              - "{{ .path.path }}/values.yaml"
+            ignoreMissingValueFiles: true
+            parameters:
+              - name: namespace
+                value: "{{ .values.namespace }}"
+              - name: client
+                value: "{{ .values.client }}"
+              - name: project
+                value: "{{ .values.project }}"
+        - repoURL: https://github.com/wesleyfebarretos/argocd-control-plane.git
+          targetRevision: main
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{ .values.namespace }}"
+      syncPolicy:
+        automated:
+          prune: false
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+          - ApplyOutOfSyncOnly=true

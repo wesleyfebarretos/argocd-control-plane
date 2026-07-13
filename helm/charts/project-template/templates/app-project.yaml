@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: {{ include "project-template.namespace" . }}
+  namespace: argocd
+spec:
+  description: "Project for {{ include "project-template.namespace" . }} namespace"
+  sourceRepos:
+    - https://github.com/wesleyfebarretos/argocd-applications.git
+  sourceNamespaces:
+    - {{ include "project-template.namespace" . }}
+  destinations:
+    - namespace: {{ include "project-template.namespace" . }}
+  {{- with .Values.appProject }}
+    {{- with .clusterResourceWhitelist }}
+  clusterResourceWhitelist: {{ toYaml . | nindent 3 }}
+    {{- end }}
+    {{- with .namespaceResourceWhitelist }}
+  namespaceResourceWhitelist: {{ toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end}}
+  orphanedResources:
+    warn: false

@@ -1,0 +1,16 @@
+{{- $resourceQuota := .Values.resourceQuota | default dict }}
+{{- $requests := $resourceQuota.requests | default dict }}
+{{- $limits := $resourceQuota.limits | default dict }}
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: default-quota
+  namespace: {{ include "project-template.namespace" . }}
+spec:
+  hard:
+    pods: {{ default "10" $resourceQuota.pods | quote }}
+    requests.cpu: {{ default "2" $requests.cpu | quote }}
+    requests.memory: {{ default "2Gi" $requests.memory | quote }}
+    limits.cpu: {{ default "8" $limits.cpu | quote }}
+    limits.memory: {{ default "8Gi" $limits.memory | quote }}
