@@ -9,9 +9,9 @@ spec:
     - https://github.com/wesleyfebarretos/argocd-applications.git
   sourceNamespaces:
     - {{ include "project-template.namespace" . }}
-      server: https://kubernetes.default.svc
   destinations:
     - namespace: {{ include "project-template.namespace" . }}
+      server: https://kubernetes.default.svc
   {{- with .Values.appProject }}
     {{- with .clusterResourceWhitelist }}
   clusterResourceWhitelist: {{ toYaml . | nindent 3 }}
