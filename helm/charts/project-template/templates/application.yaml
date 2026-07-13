@@ -10,9 +10,8 @@ spec:
     path: clients/{{ include "project-template.client" . }}/{{ include "project-template.project" . }}/overlays/{{ include "project-template.environment" . }}
     targetRevision: main
   destination:
-      destination:
-        namespace: {{ include "project-template.namespace" . }}
-        server: 'https://kubernetes.default.svc'
+    namespace: {{ include "project-template.namespace" . }}
+    server: 'https://kubernetes.default.svc'
   syncPolicy:
     automated:
         prune: true
