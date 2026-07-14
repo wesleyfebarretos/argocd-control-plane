@@ -14,7 +14,7 @@ spec:
       server: https://kubernetes.default.svc
   {{- with .Values.appProject }}
     {{- with .clusterResourceWhitelist }}
-  clusterResourceWhitelist: {{ toYaml . | nindent 3 }}
+  clusterResourceWhitelist: {{ toYaml . | nindent 4 }}
     {{- end }}
     {{- with .namespaceResourceWhitelist }}
   namespaceResourceWhitelist: {{ toYaml . | nindent 4 }}
