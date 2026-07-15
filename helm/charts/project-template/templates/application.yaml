@@ -7,7 +7,7 @@ spec:
   project: {{ include "project-template.namespace" . }}
   source:
     repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
-    path: clients/{{ include "project-template.client" . }}/{{ include "project-template.project" . }}/overlays/{{ include "project-template.environment" . }}
+    path: tenants/{{ include "project-template.tenant" . }}/{{ include "project-template.project" . }}/overlays/{{ include "project-template.environment" . }}
     targetRevision: main
   destination:
     namespace: {{ include "project-template.namespace" . }}

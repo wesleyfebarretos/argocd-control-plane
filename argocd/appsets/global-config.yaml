@@ -11,10 +11,10 @@ spec:
         repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
         revision: main
         directories:
-          - path: clients/*/*/overlays/*
+          - path: tenants/*/*/overlays/*
         values:
           namespace: "{{ index .path.segments 1}}-{{ index .path.segments 2}}-{{ index .path.segments 4}}"
-          client: "{{ index .path.segments 1 }}"
+          tenant: "{{ index .path.segments 1 }}"
           project: "{{ index .path.segments 2 }}"
           environment: "{{ .path.basename }}"
   template:
@@ -22,7 +22,7 @@ spec:
       name: "{{ .values.namespace }}-config"
       labels:
         app.kubernetes.io/name: "{{ .values.namespace }}-config"
-        client: "{{ .values.client }}"
+        tenant: "{{ .values.tenant }}"
         project: "{{ .values.project }}"
     spec:
       project: platform
@@ -33,13 +33,13 @@ spec:
           helm:
             valueFiles:
               - "$values/projects/{{ .values.project }}/values.yaml"
-              - "$values/clients/{{ .values.client }}/{{ .values.project}}/{{ .values.environment }}/values.yaml"
+              - "$values/tenants/{{ .values.tenant }}/{{ .values.project}}/{{ .values.environment }}/values.yaml"
             ignoreMissingValueFiles: true
             parameters:
               - name: namespace
                 value: "{{ .values.namespace }}"
-              - name: client
-                value: "{{ .values.client }}"
+              - name: tenant
+                value: "{{ .values.tenant }}"
               - name: project
                 value: "{{ .values.project }}"
               - name: environment

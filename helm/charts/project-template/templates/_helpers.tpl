@@ -8,9 +8,9 @@
 {{- required "A valid project name is required" .Values.project -}}
 {{- end }}
 
-{{/* Name of the client */}}
-{{- define "project-template.client" -}}
-{{- required "A valid client name is required" .Values.client -}}
+{{/* Name of the tenant */}}
+{{- define "project-template.tenant" -}}
+{{- required "A valid tenant name is required" .Values.tenant -}}
 {{- end }}
 
 {{/* Name of the environment */}}
