@@ -33,7 +33,7 @@ spec:
           helm:
             valueFiles:
               - "$values/projects/{{ .values.project }}/values.yaml"
-              - "{{ .path.path }}/values.yaml"
+              - "$values/clients/{{ .values.client }}/{{ .values.project}}/{{ .values.environment }}/values.yaml"
             ignoreMissingValueFiles: true
             parameters:
               - name: namespace
