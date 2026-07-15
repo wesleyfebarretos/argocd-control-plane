@@ -1,7 +1,3 @@
-{{- $resourceQuota := .Values.resourceQuota | default dict }}
-{{- $requests := $resourceQuota.requests | default dict }}
-{{- $limits := $resourceQuota.limits | default dict }}
-
 apiVersion: v1
 kind: ResourceQuota
 metadata:
@@ -9,8 +5,8 @@ metadata:
   namespace: {{ include "project-template.namespace" . }}
 spec:
   hard:
-    pods: {{ default "2" $resourceQuota.pods | quote }}
-    requests.cpu: {{ default "1" $requests.cpu | quote }}
-    requests.memory: {{ default "2Gi" $requests.memory | quote }}
-    limits.cpu: {{ default "2" $limits.cpu | quote }}
-    limits.memory: {{ default "4Gi" $limits.memory | quote }}
+    pods: {{ .Values.resourceQuota.pods | quote }}
+    requests.cpu: {{ .Values.resourceQuota.requests.cpu | quote }}
+    requests.memory: {{ .Values.resourceQuota.requests.memory | quote }}
+    limits.cpu: {{ .Values.resourceQuota.limits.cpu | quote }}
+    limits.memory: {{ .Values.resourceQuota.limits.memory | quote }}
