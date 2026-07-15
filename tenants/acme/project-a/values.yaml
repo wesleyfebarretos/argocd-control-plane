@@ -1,0 +1,5 @@
+resourceQuota:
+  pods: 10
+  limits:
+    cpu: "2"
+    memory: "2Gi"
