@@ -9,8 +9,8 @@ metadata:
   namespace: {{ include "project-template.namespace" . }}
 spec:
   hard:
-    pods: {{ default "10" $resourceQuota.pods | quote }}
-    requests.cpu: {{ default "2" $requests.cpu | quote }}
+    pods: {{ default "2" $resourceQuota.pods | quote }}
+    requests.cpu: {{ default "1" $requests.cpu | quote }}
     requests.memory: {{ default "2Gi" $requests.memory | quote }}
-    limits.cpu: {{ default "8" $limits.cpu | quote }}
-    limits.memory: {{ default "8Gi" $limits.memory | quote }}
+    limits.cpu: {{ default "2" $limits.cpu | quote }}
+    limits.memory: {{ default "4Gi" $limits.memory | quote }}
