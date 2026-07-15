@@ -4,7 +4,7 @@ metadata:
   name: {{ include "project-template.namespace" . }}
   namespace: {{ include "project-template.namespace" . }}
   annotations:
-    link.argocd.argoproj.io/Application config: https://argocd.internal/applications/platform/{{ include "project-template.namespace" . }}-config
+    link.argocd.argoproj.io/config: https://argocd.internal/applications/platform/{{ include "project-template.namespace" . }}-config
 spec:
   project: {{ include "project-template.namespace" . }}
   source:
