@@ -3,6 +3,8 @@ kind: ApplicationSet
 metadata:
   name: applications-global-config
   namespace: platform
+  annotations:
+    argocd.argoproj.io/ignore-default-links: "true"
 spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
