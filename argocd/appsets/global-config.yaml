@@ -3,8 +3,6 @@ kind: ApplicationSet
 metadata:
   name: applications-global-config
   namespace: platform
-  annotations:
-    argocd.argoproj.io/ignore-default-links: "true"
 spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
@@ -22,6 +20,8 @@ spec:
   template:
     metadata:
       name: "{{ .values.namespace }}-config"
+      annotations:
+        argocd.argoproj.io/ignore-default-links: "true"
       labels:
         app.kubernetes.io/name: "{{ .values.namespace }}-config"
         tenant: "{{ .values.tenant }}"
