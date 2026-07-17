@@ -1,5 +1,8 @@
 resourceQuota:
   pods: 10
+  requests:
+    cpu: "500m"
+    memory: "640Mi"
   limits:
-    cpu: "4"
-    memory: "6Gi"
+    cpu: "1"
+    memory: "1280Mi"
