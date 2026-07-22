@@ -3,14 +3,16 @@ kind: Application
 metadata:
   name: {{ include "project-template.namespace" . }}
   namespace: {{ include "project-template.namespace" . }}
-  # annotations:
-  #   link.argocd.argoproj.io/config: https://argocd.internal/applications/platform/{{ include "project-template.namespace" . }}-config
+  annotations:
+    argocd.argoproj.io/manifest-generate-paths: /tenants/{{ include "project-template.tenant" . }}/{{ include "project-template.project" . }}
 spec:
   project: {{ include "project-template.namespace" . }}
   source:
     repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
     path: tenants/{{ include "project-template.tenant" . }}/{{ include "project-template.project" . }}/overlays/{{ include "project-template.environment" . }}
     targetRevision: main
+    plugin:
+      name: kustomized-helm
   destination:
     namespace: {{ include "project-template.namespace" . }}
     server: 'https://kubernetes.default.svc'
