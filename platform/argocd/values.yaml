@@ -166,36 +166,38 @@ configs:
               }
 
               build_chart_dependencies_recursive() {
-                chart_dir="$1"
-                chart_dir="$(cd "${chart_dir}" && pwd -P)"
+                (
+                  chart_dir="$1"
+                  chart_dir="$(cd "${chart_dir}" && pwd -P)"
 
-                if already_visited "${chart_dir}"; then
-                  return 0
-                fi
-                mark_visited "${chart_dir}"
-
-                chart_yaml="${chart_dir}/Chart.yaml"
-                if [ ! -f "${chart_yaml}" ]; then
-                  echo "Skipping ${chart_dir}: Chart.yaml not found" >&2
-                  return 0
-                fi
-
-                deps_file="$(mktemp)"
-                parse_file_dependencies "${chart_yaml}" > "${deps_file}"
-                while IFS='|' read -r dep_name dep_repo; do
-                  [ -n "${dep_repo}" ] || continue
-                  dep_rel="${dep_repo#file://}"
-                  if dep_dir="$(cd "${chart_dir}" && cd "${dep_rel}" 2>/dev/null && pwd -P)"; then
-                    build_chart_dependencies_recursive "${dep_dir}"
-                  else
-                    echo "Dependency path not found for ${dep_name}: ${dep_repo} (from ${chart_dir})" >&2
-                    exit 1
+                  if already_visited "${chart_dir}"; then
+                    exit 0
                   fi
-                done < "${deps_file}"
-                rm -f "${deps_file}"
+                  mark_visited "${chart_dir}"
 
-                echo "Building helm dependencies for ${chart_dir}" >&2
-                helm dependency build "${chart_dir}" 1>&2
+                  chart_yaml="${chart_dir}/Chart.yaml"
+                  if [ ! -f "${chart_yaml}" ]; then
+                    echo "Skipping ${chart_dir}: Chart.yaml not found" >&2
+                    exit 0
+                  fi
+
+                  deps_file="$(mktemp)"
+                  parse_file_dependencies "${chart_yaml}" > "${deps_file}"
+                  while IFS='|' read -r dep_name dep_repo; do
+                    [ -n "${dep_repo}" ] || continue
+                    dep_rel="${dep_repo#file://}"
+                    if dep_dir="$(cd "${chart_dir}" && cd "${dep_rel}" 2>/dev/null && pwd -P)"; then
+                      build_chart_dependencies_recursive "${dep_dir}"
+                    else
+                      echo "Dependency path not found for ${dep_name}: ${dep_repo} (from ${chart_dir})" >&2
+                      exit 1
+                    fi
+                  done < "${deps_file}"
+                  rm -f "${deps_file}"
+
+                  echo "Building helm dependencies for ${chart_dir}" >&2
+                  helm dependency build "${chart_dir}" 1>&2
+                )
               }
 
               kustomization_file="$(find_kustomization_file || true)"
@@ -267,9 +269,8 @@ server:
               #   hostnames:
               #     - grpc.argocd.internal
 repoServer:
-  env:
-    - name: ARGOCD_REPO_SERVER_PLUGIN_USE_MANIFEST_GENERATE_PATHS
-      value: "true"
+  extraArgs:
+    - --plugin-use-manifest-generate-paths
   extraContainers:
     - name: cmp-kustomized-helm
       command:
