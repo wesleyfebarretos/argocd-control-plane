@@ -43,191 +43,73 @@ configs:
     create: true
     plugins:
       kustomized-helm:
-        discover:
-          find:
-            command:
-              - sh
-              - -c
-              - |
-                if [ -f "./kustomization.yaml" ] || [ -f "./kustomization.yml" ] || [ -f "./Kustomization" ]; then
-                  echo "kustomization found"
-                fi
-        generate:
+        init:
           command: [sh, -c]
           args:
             - |
               set -eu
               (set -o pipefail 2>/dev/null) && set -o pipefail || true
 
-              find_kustomization_file() {
-                for candidate in "./kustomization.yaml" "./kustomization.yml" "./Kustomization"; do
-                  if [ -f "${candidate}" ]; then
-                    echo "${candidate}"
-                    return 0
-                  fi
-                done
-                return 1
-              }
+              kustomization_file=""
+              for candidate in "./kustomization.yaml" "./kustomization.yml" "./Kustomization"; do
+                if [ -f "${candidate}" ]; then
+                  kustomization_file="${candidate}"
+                  break
+                fi
+              done
 
-              parse_chart_home() {
-                kustomization_file="$1"
-                awk '
-                  /^[[:space:]]*helmGlobals:[[:space:]]*$/ { in_globals=1; next }
-                  in_globals && /^[[:space:]]*[A-Za-z0-9_]+:[[:space:]]*/ {
-                    line=$0
-                    if (line ~ /^[[:space:]]*chartHome:[[:space:]]*/) {
-                      sub(/^[[:space:]]*chartHome:[[:space:]]*/, "", line)
-                      gsub(/["'\'' ]/, "", line)
-                      print line
-                      exit
-                    }
-                    if (line !~ /^[[:space:]]*chartHome:[[:space:]]*/) {
-                      in_globals=0
-                    }
-                  }
-                ' "${kustomization_file}"
-              }
-
-              parse_helm_chart_names() {
-                kustomization_file="$1"
-                awk '
-                  /^[[:space:]]*helmCharts:[[:space:]]*$/ { in_charts=1; next }
-                  in_charts && /^[[:space:]]*[A-Za-z0-9_]+:[[:space:]]*$/ && $0 !~ /^[[:space:]]*-[[:space:]]/ { in_charts=0 }
-                  in_charts && /^[[:space:]]*-[[:space:]]*name:[[:space:]]*/ {
-                    line=$0
-                    sub(/^[[:space:]]*-[[:space:]]*name:[[:space:]]*/, "", line)
-                    gsub(/["'\'' ]/, "", line)
-                    if (line != "") print line
-                  }
-                  in_charts && /^[[:space:]]*name:[[:space:]]*/ {
-                    line=$0
-                    sub(/^[[:space:]]*name:[[:space:]]*/, "", line)
-                    gsub(/["'\'' ]/, "", line)
-                    if (line != "") print line
-                  }
-                ' "${kustomization_file}"
-              }
-
-              parse_file_dependencies() {
-                chart_yaml="$1"
-                awk '
-                  BEGIN { in_deps=0; name=""; repo="" }
-                  /^[[:space:]]*dependencies:[[:space:]]*$/ { in_deps=1; next }
-                  in_deps && /^[^[:space:]-]/ { in_deps=0 }
-                  !in_deps { next }
-                  {
-                    line=$0
-                    sub(/[[:space:]]+#.*/, "", line)
-                    if (line ~ /^[[:space:]]*-[[:space:]]+/) {
-                      if (name != "" && repo ~ /^file:\/\//) {
-                        print name "|" repo
-                      }
-                      name=""
-                      repo=""
-                    }
-                    if (line ~ /^[[:space:]]*-[[:space:]]*name:[[:space:]]*/) {
-                      sub(/^[[:space:]]*-[[:space:]]*name:[[:space:]]*/, "", line)
-                      gsub(/["'\'' ]/, "", line)
-                      name=line
-                    } else if (line ~ /^[[:space:]]*name:[[:space:]]*/) {
-                      sub(/^[[:space:]]*name:[[:space:]]*/, "", line)
-                      gsub(/["'\'' ]/, "", line)
-                      name=line
-                    } else if (line ~ /^[[:space:]]*repository:[[:space:]]*/) {
-                      sub(/^[[:space:]]*repository:[[:space:]]*/, "", line)
-                      gsub(/["'\'' ]/, "", line)
-                      repo=line
-                    }
-                    if (name != "" && repo ~ /^file:\/\//) {
-                      print name "|" repo
-                      name=""
-                      repo=""
-                    }
-                  }
-                  END {
-                    if (name != "" && repo ~ /^file:\/\//) {
-                      print name "|" repo
-                    }
-                  }
-                ' "${chart_yaml}"
-              }
-
-              VISITED="$(mktemp)"
-              trap 'rm -f "${VISITED}"' EXIT
-
-              already_visited() {
-                chart_dir="$1"
-                grep -Fqx "${chart_dir}" "${VISITED}" 2>/dev/null
-              }
-
-              mark_visited() {
-                chart_dir="$1"
-                printf '%s\n' "${chart_dir}" >> "${VISITED}"
-              }
-
-              build_chart_dependencies_recursive() {
-                (
-                  chart_dir="$1"
-                  chart_dir="$(cd "${chart_dir}" && pwd -P)"
-
-                  if already_visited "${chart_dir}"; then
-                    exit 0
-                  fi
-                  mark_visited "${chart_dir}"
-
-                  chart_yaml="${chart_dir}/Chart.yaml"
-                  if [ ! -f "${chart_yaml}" ]; then
-                    echo "Skipping ${chart_dir}: Chart.yaml not found" >&2
-                    exit 0
-                  fi
-
-                  deps_file="$(mktemp)"
-                  parse_file_dependencies "${chart_yaml}" > "${deps_file}"
-                  while IFS='|' read -r dep_name dep_repo; do
-                    [ -n "${dep_repo}" ] || continue
-                    dep_rel="${dep_repo#file://}"
-                    if dep_dir="$(cd "${chart_dir}" && cd "${dep_rel}" 2>/dev/null && pwd -P)"; then
-                      build_chart_dependencies_recursive "${dep_dir}"
-                    else
-                      echo "Dependency path not found for ${dep_name}: ${dep_repo} (from ${chart_dir})" >&2
-                      exit 1
-                    fi
-                  done < "${deps_file}"
-                  rm -f "${deps_file}"
-
-                  echo "Building helm dependencies for ${chart_dir}" >&2
-                  helm dependency build "${chart_dir}" 1>&2
-                )
-              }
-
-              kustomization_file="$(find_kustomization_file || true)"
-              if [ -z "${kustomization_file}" ]; then
-                echo "No kustomization file found in application path" >&2
-                exit 1
-              fi
+              [ -n "${kustomization_file}" ]
               kustomization_dir="$(dirname "${kustomization_file}")"
-              chart_home="$(parse_chart_home "${kustomization_file}")"
+              chart_home="$(awk '
+                /^[[:space:]]*helmGlobals:[[:space:]]*$/ { in_globals=1; next }
+                in_globals && /^[[:space:]]*chartHome:[[:space:]]*/ {
+                  line=$0
+                  sub(/^[[:space:]]*chartHome:[[:space:]]*/, "", line)
+                  gsub(/["'\'' ]/, "", line)
+                  print line
+                  exit
+                }
+              ' "${kustomization_file}")"
               if [ -z "${chart_home}" ]; then
                 chart_home="charts"
               fi
+              chart_home_dir="$(cd "${kustomization_dir}" && cd "${chart_home}" && pwd -P)"
 
-              if chart_home_dir="$(cd "${kustomization_dir}" && cd "${chart_home}" 2>/dev/null && pwd -P)"; then
-                charts_file="$(mktemp)"
-                parse_helm_chart_names "${kustomization_file}" > "${charts_file}"
-                while IFS= read -r chart_name; do
-                  [ -n "${chart_name}" ] || continue
-                  chart_dir="${chart_home_dir}/${chart_name}"
-                  if [ -d "${chart_dir}" ]; then
-                    build_chart_dependencies_recursive "${chart_dir}"
-                  else
-                    echo "Skipping ${chart_name}: ${chart_dir} not found (likely remote chart)" >&2
-                  fi
-                done < "${charts_file}"
-                rm -f "${charts_file}"
-              else
-                echo "chartHome not found: ${chart_home}" >&2
-              fi
+              built_file="$(mktemp)"
+              charts_file="$(mktemp)"
+              trap 'rm -f "${built_file}" "${charts_file}"' EXIT
 
+              awk '
+                /^[[:space:]]*helmCharts:[[:space:]]*$/ { in_charts=1; next }
+                in_charts && /^[[:space:]]*[A-Za-z0-9_]+:[[:space:]]*$/ && $0 !~ /^[[:space:]]*-[[:space:]]/ { in_charts=0 }
+                in_charts && /^[[:space:]]*-[[:space:]]*name:[[:space:]]*/ {
+                  line=$0
+                  sub(/^[[:space:]]*-[[:space:]]*name:[[:space:]]*/, "", line)
+                  gsub(/["'\'' ]/, "", line)
+                  if (line != "") print line
+                }
+                in_charts && /^[[:space:]]*name:[[:space:]]*/ {
+                  line=$0
+                  sub(/^[[:space:]]*name:[[:space:]]*/, "", line)
+                  gsub(/["'\'' ]/, "", line)
+                  if (line != "") print line
+                }
+              ' "${kustomization_file}" > "${charts_file}"
+
+              while IFS= read -r chart_name; do
+                [ -n "${chart_name}" ] || continue
+                chart_dir="${chart_home_dir}/${chart_name}"
+                if grep -Fqx "${chart_dir}" "${built_file}" 2>/dev/null; then
+                  continue
+                fi
+                printf '%s\n' "${chart_dir}" >> "${built_file}"
+                helm dependency build "${chart_dir}" 1>&2
+              done < "${charts_file}"
+        generate:
+          command: [sh, -c]
+          args:
+            - |
+              set -eu
               kustomize build --enable-helm --load-restrictor LoadRestrictionsNone
   rbac:
     create: true
