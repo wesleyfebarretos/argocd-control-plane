@@ -6,9 +6,10 @@ configs:
   params:
     create: true # required — tells the chart to create the ConfigMap
     controller.diff.server.side: 'true'
-    application.namespaces: '*'
-    applicationsetcontroller.namespaces: '*'
-    applicationsetcontroller.enable.scm.providers: false
+    # To enable applications in any namespace uncomment the following lines
+    # application.namespaces: '*'
+    # applicationsetcontroller.namespaces: '*'
+    # applicationsetcontroller.enable.scm.providers: false
   cm:
     create: true
     admin.enabled: 'false'
