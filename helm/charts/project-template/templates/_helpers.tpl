@@ -1,6 +1,6 @@
 {{/* Name of the project namespace */}}
 {{- define "project-template.namespace" -}}
-{{- required "A vaid namespace is required" .Values.namespace -}}
+{{- required "A valid namespace is required" .Values.namespace -}}
 {{- end }}
 
 {{/* Name of the project */}}

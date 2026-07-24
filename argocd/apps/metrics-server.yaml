@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: metrics-server
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: platform
   source:
@@ -14,7 +16,7 @@ spec:
     namespace: kube-system
   syncPolicy:
     automated:
-      prune: false
+      prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
