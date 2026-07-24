@@ -16,10 +16,10 @@ spec:
         directories:
           - path: tenants/*/*/overlays/*
         values:
-          namespace: "{{ index .path.segments 1}}-{{ index .path.segments 2}}-{{ index .path.segments 4}}"
           tenant: "{{ index .path.segments 1 }}"
           project: "{{ index .path.segments 2 }}"
           environment: "{{ .path.basename }}"
+          namespace: "{{ index .path.segments 1}}-{{ index .path.segments 2}}-{{ .path.basename }}"
   template:
     metadata:
       name: "{{ .values.namespace }}-config"
@@ -27,6 +27,7 @@ spec:
         app.kubernetes.io/name: "{{ .values.namespace }}-config"
         tenant: "{{ .values.tenant }}"
         project: "{{ .values.project }}"
+        environment: "{{ .values.environment }}"
     spec:
       project: platform
       sources:
