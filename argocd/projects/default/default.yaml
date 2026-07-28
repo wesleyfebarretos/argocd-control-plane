@@ -9,3 +9,6 @@ spec:
   namespaceResourceBlacklist:
     - group: '*'
       kind: '*'
+  clusterResourceBlacklist:
+    - group: '*'
+      kind: '*'
