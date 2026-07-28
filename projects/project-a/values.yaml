@@ -16,8 +16,8 @@ appProject:
     orphanedResources:
       warn: false
     clusterResourceWhitelist:
-      - group: ''
-        kind: "Namespace"
+      - group: '*'
+        kind: "*"
     namespaceResourceWhitelist:
       # argoproj.io/v1alpha1
       - group: 'argoproj.io'
