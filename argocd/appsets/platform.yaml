@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: platform
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - list:
+        elements:
+          - name: cert-manager
+            path: cert-manager
+            namespace: cert-manager
+            wave: "0"
+          - name: envoy-gateway
+            path: envoy-gateway
+            namespace: envoy-gateway-system
+            wave: "1"
+          - name: envoy-proxy
+            path: envoy-proxy
+            namespace: envoy-gateway-system
+            wave: "2"
+          - name: gateway
+            path: gateway
+            namespace: envoy-gateway-system
+            wave: "3"
+          - name: metrics-server
+            path: metrics-server
+            namespace: kube-system
+            wave: "4"
+          - name: cloudnative-pg
+            path: cloudnative-pg
+            namespace: cloudnative-pg
+            wave: "5"
+  template:
+    metadata:
+      name: "{{ .name }}"
+      namespace: argocd
+      annotations:
+        argocd.argoproj.io/sync-wave: "{{ .wave }}"
+      labels:
+        app.kubernetes.io/part-of: platform
+    spec:
+      project: platform
+      source:
+        repoURL: https://github.com/wesleyfebarretos/argocd-control-plane.git
+        targetRevision: main
+        path: "platform/{{ .path }}"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{ .namespace }}"
+      syncPolicy:
+        automated:
+          prune: false
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+          - ApplyOutOfSyncOnly=true

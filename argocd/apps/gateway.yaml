@@ -3,8 +3,6 @@ kind: Application
 metadata:
   name: gateway
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
   annotations:
     argocd.argoproj.io/sync-wave: "3"
 spec:
@@ -18,7 +16,7 @@ spec:
     namespace: envoy-gateway-system
   syncPolicy:
     automated:
-      prune: true
+      prune: false
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
