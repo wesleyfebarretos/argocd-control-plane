@@ -1,37 +1,53 @@
 appProject:
-  clusterResourceWhitelist:
-    - group: ''
-      kind: "Namespace"
-  namespaceResourceWhitelist:
-    # argoproj.io/v1alpha1
-    - group: 'argoproj.io'
-      kind: Application
-    - group: 'argoproj.io'
-      kind: ApplicationSet
-    # core/v1
-    - group: ''
-      kind: Service
-    - group: ''
-      kind: Secret
-    - group: ''
-      kind: ConfigMap
-    - group: ''
-      kind: ServiceAccount
-    - group: ''
-      kind: Pod
-    # apps/v1
-    - group: apps
-      kind: Deployment
-    - group: apps
-      kind: StatefulSet
-    - group: apps
-      kind: ReplicaSet
-    # autoscaling/v2
-    - group: autoscaling
-      kind: HorizontalPodAutoscaler
-    # networking.k8s.io/v1
-    - group: networking.k8s.io
-      kind: Ingress
-    # gateway.networking.k8s.io/v1
-    - group: gateway.networking.k8s.io
-      kind: HTTPRoute
+  apiVersion: argoproj.io/v1alpha1
+  kind: AppProject
+  metadata:
+    name: '{{ include "project-template.namespace" . }}'
+    namespace: argocd
+  spec:
+    description: 'Project for {{ include "project-template.namespace" . }} namespace'
+    sourceRepos:
+      - https://github.com/wesleyfebarretos/argocd-applications.git
+    sourceNamespaces:
+      - '{{ include "project-template.namespace" . }}'
+    destinations:
+      - namespace: '{{ include "project-template.namespace" . }}'
+        server: https://kubernetes.default.svc
+    orphanedResources:
+      warn: false
+    clusterResourceWhitelist:
+      - group: ''
+        kind: "Namespace"
+    namespaceResourceWhitelist:
+      # argoproj.io/v1alpha1
+      - group: 'argoproj.io'
+        kind: Application
+      - group: 'argoproj.io'
+        kind: ApplicationSet
+      # core/v1
+      - group: ''
+        kind: Service
+      - group: ''
+        kind: Secret
+      - group: ''
+        kind: ConfigMap
+      - group: ''
+        kind: ServiceAccount
+      - group: ''
+        kind: Pod
+      # apps/v1
+      - group: apps
+        kind: Deployment
+      - group: apps
+        kind: StatefulSet
+      - group: apps
+        kind: ReplicaSet
+      # autoscaling/v2
+      - group: autoscaling
+        kind: HorizontalPodAutoscaler
+      # networking.k8s.io/v1
+      - group: networking.k8s.io
+        kind: Ingress
+      # gateway.networking.k8s.io/v1
+      - group: gateway.networking.k8s.io
+        kind: HTTPRoute

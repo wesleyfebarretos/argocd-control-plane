@@ -1,5 +1,6 @@
-{{- $appProject := .Values.appProject | default dict }}
-
+{{- if .Values.appProject }}
+{{- tpl (toYaml .Values.appProject) $ }}
+{{- else }}
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
@@ -14,11 +15,6 @@ spec:
   destinations:
     - namespace: {{ include "project-template.namespace" . }}
       server: https://kubernetes.default.svc
-  {{- with $appProject.clusterResourceWhitelist }}
-  clusterResourceWhitelist: {{ toYaml . | nindent 4 }}
-  {{- end }}
-  {{- with $appProject.namespaceResourceWhitelist }}
-  namespaceResourceWhitelist: {{ toYaml . | nindent 4 }}
-  {{- end }}
   orphanedResources:
     warn: false
+{{- end }}
