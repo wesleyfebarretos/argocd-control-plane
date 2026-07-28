@@ -6,16 +6,13 @@ metadata:
 spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
-  syncPolicy:
-    applicationsSync: create-update
-    preserveResourcesOnDeletion: true
   generators:
     - list:
         elements:
           - name: cert-manager
             path: cert-manager
             namespace: cert-manager
-            wave: "0"
+            wave: "-10"
           - name: envoy-gateway
             path: envoy-gateway
             namespace: envoy-gateway-system
@@ -44,6 +41,8 @@ spec:
     metadata:
       name: "{{ .name }}"
       namespace: argocd
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
       annotations:
         argocd.argoproj.io/sync-wave: "{{ .wave }}"
       labels:
@@ -59,7 +58,7 @@ spec:
         namespace: "{{ .namespace }}"
       syncPolicy:
         automated:
-          prune: false
+          prune: true
           selfHeal: true
         syncOptions:
           - CreateNamespace=true
