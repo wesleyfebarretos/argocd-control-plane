@@ -32,6 +32,10 @@ spec:
             path: metrics-server
             namespace: kube-system
             wave: "4"
+          - name: argocd
+            path: argocd
+            namespace: argocd
+            wave: "4"
           - name: cloudnative-pg
             path: cloudnative-pg
             namespace: cloudnative-pg
