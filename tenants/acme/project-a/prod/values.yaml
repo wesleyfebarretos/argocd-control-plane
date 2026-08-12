@@ -4,5 +4,5 @@ resourceQuota:
     cpu: "500m"
     memory: "640Mi"
   limits:
-    cpu: "1"
-    memory: "1280Mi"
+    cpu: "4"
+    memory: "4Gi"
