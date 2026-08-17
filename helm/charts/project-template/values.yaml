@@ -1,5 +1,5 @@
 resourceQuota:
-  pods: "2"
+  pods: "5"
   requests:
     cpu: "250m"
     memory: "512Mi"
