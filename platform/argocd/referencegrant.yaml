@@ -1,7 +1,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: ReferenceGrant
 metadata:
-  name: argocd
+  name: allow-platform-gateway-tls
   namespace: argocd
 spec:
   from:
@@ -11,3 +11,4 @@ spec:
   to:
     - group: ""
       kind: Secret
+      name: argocd-tls
