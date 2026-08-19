@@ -3,6 +3,8 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - ./bootstrap/root-app.yaml
+  - certificate.yaml
+  - referencegrant.yaml
 helmCharts:
   - name: argo-cd
     repo: https://argoproj.github.io/argo-helm

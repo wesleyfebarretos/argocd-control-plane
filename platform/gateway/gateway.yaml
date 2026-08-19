@@ -21,6 +21,7 @@ spec:
           - group: ''
             kind: Secret
             name: gateway-tls
+            namespace: argocd
       allowedRoutes:
         namespaces:
           from: All

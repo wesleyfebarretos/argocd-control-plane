@@ -1,16 +1,15 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: gateway-tls
-  namespace: envoy-gateway-system
+  name: argocd
+  namespace: argocd
 spec:
-  secretName: gateway-tls
+  secretName: argocd-tls
   issuerRef:
     kind: ClusterIssuer
     name: platform-selfsigned
   dnsNames:
     - argocd.internal
-    - acme.project-a.internal
   privateKey:
     algorithm: ECDSA
     size: 256
