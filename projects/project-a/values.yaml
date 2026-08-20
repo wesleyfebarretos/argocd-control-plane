@@ -51,6 +51,11 @@ appProject:
       # gateway.networking.k8s.io/v1
       - group: gateway.networking.k8s.io
         kind: HTTPRoute
+      - group: gateway.networking.k8s.io
+        kind: ReferenceGrant
       # postgresql.cnpg.io/v1
       - group: postgresql.cnpg.io
         kind: Cluster
+      # cert-manager.io/v1
+      - group: cert-manager.io
+        kind: Certificate

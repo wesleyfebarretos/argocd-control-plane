@@ -22,6 +22,10 @@ spec:
             kind: Secret
             name: argocd-tls
             namespace: argocd
+          - group: ''
+            kind: Secret
+            name: project-a-tls
+            namespace: acme-project-a-prod
       allowedRoutes:
         namespaces:
           from: All
