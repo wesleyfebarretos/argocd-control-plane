@@ -1,0 +1,30 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: minio-tls
+  namespace: minio
+spec:
+  secretName: minio-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: platform-selfsigned
+  dnsNames:
+    - minio.internal
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: ReferenceGrant
+metadata:
+  name: allow-platform-minio-tls
+  namespace: minio
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: envoy-gateway-system
+  to:
+    - group: ""
+      kind: Secret
+      name: minio-tls
