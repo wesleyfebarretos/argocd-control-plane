@@ -26,6 +26,10 @@ spec:
             kind: Secret
             name: project-a-tls
             namespace: acme-project-a-prod
+          - group: ''
+            kind: Secret
+            name: minio-tls
+            namespace: minio
       allowedRoutes:
         namespaces:
           from: All
