@@ -10,12 +10,8 @@ spec:
       namespace: envoy-gateway-system
       sectionName: https
   hostnames:
-    - minio.internal
+    - console.minio.internal
   rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /console
-      backendRefs:
+    - backendRefs:
         - name: minio-console
           port: 9001
