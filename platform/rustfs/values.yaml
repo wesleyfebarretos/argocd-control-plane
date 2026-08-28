@@ -12,6 +12,6 @@ secret:
   # Just for development purposes, it allows login with rustfsadmin/rustfsadmin
   allowInsecureDefaults: true
 storageclass:
-  name: default
+  name: standard
   dataStorageSize: 10Gi
   logStorageSize: 10Gi
