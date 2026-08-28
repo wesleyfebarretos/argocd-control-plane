@@ -7,7 +7,7 @@ mode:
 ingress:
   enabled: false
 gatewayApi:
-  enabled: true
+  enabled: false
 secret:
   # Just for development purposes, it allows login with rustfsadmin/rustfsadmin
   allowInsecureDefaults: true
