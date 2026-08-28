@@ -11,3 +11,7 @@ gatewayApi:
 secret:
   # Just for development purposes, it allows login with rustfsadmin/rustfsadmin
   allowInsecureDefaults: true
+storageclass:
+  name: default
+  dataStorageSize: 10Gi
+  logStorageSize: 10Gi
