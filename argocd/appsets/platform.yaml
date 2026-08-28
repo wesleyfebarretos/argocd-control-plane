@@ -33,10 +33,6 @@ spec:
             path: argocd
             namespace: argocd
             wave: "4"
-          - name: minio
-            path: minio
-            namespace: minio
-            wave: "4"
           - name: cloudnative-pg
             path: cloudnative-pg
             namespace: cloudnative-pg
