@@ -1,0 +1,29 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: rustfs-cert
+spec:
+  secretName: rustfs-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: platform-selfsigned
+  dnsNames:
+    - rustfs.internal
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: ReferenceGrant
+metadata:
+  name: allow-platform-gateway-tls
+  namespace: rustfs
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: envoy-gateway-system
+  to:
+    - group: ""
+      kind: Secret
+      name: rustfs-tls

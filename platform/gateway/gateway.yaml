@@ -26,6 +26,10 @@ spec:
             kind: Secret
             name: project-a-tls
             namespace: acme-project-a-prod
+          - group: ''
+            kind: Secret
+            name: rustfs-tls
+            namespace: rustfs
       allowedRoutes:
         namespaces:
           from: All

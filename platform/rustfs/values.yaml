@@ -1,0 +1,13 @@
+replicaCount: 1
+mode:
+  standalone:
+    enabled: true
+  distributed:
+    enabled: false
+ingress:
+  enabled: false
+gatewayApi:
+  enabled: true
+secret:
+  # Just for development purposes, it allows login with rustfsadmin/rustfsadmin
+  allowInsecureDefaults: true
