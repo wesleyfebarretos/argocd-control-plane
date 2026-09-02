@@ -9,8 +9,8 @@ spec:
   generators:
     - list:
         elements:
-          - name: oidc
-            path: oidc
+          - name: rbac
+            path: rbac
             namespace: default
             wave: "0"
           - name: cert-manager
