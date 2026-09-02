@@ -10,6 +10,11 @@ nodes:
         nodeRegistration:
           kubeletExtraArgs:
             node-labels: "ingress-ready=true"
+      - |
+        kind: ClusterConfiguration
+        apiServer:
+          extraArgs:
+            service-account-jwks-uri: "https://kubernetes.default.svc.cluster.local/openid/v1/jwks"
     extraPortMappings:
       - containerPort: 30080
         hostPort: 80

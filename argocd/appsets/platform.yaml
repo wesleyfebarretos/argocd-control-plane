@@ -9,6 +9,10 @@ spec:
   generators:
     - list:
         elements:
+          - name: oidc
+            path: oidc
+            namespace: default
+            wave: "0"
           - name: cert-manager
             path: cert-manager
             namespace: cert-manager
