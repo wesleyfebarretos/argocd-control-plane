@@ -37,9 +37,9 @@ spec:
             path: argocd
             namespace: argocd
             wave: "4"
-          - name: rustfs
-            path: rustfs
-            namespace: rustfs
+          - name: rustfs-operator
+            path: rustfs-operator
+            namespace: rustfs-system
             wave: "5"
           - name: cloudnative-pg
             path: cloudnative-pg
