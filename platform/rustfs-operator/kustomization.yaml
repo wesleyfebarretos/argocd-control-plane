@@ -8,5 +8,4 @@ helmCharts:
     version: 0.0.5
     releaseName: rustfs-operator
     namespace: rustfs-system
-    includeCRDs: true
     valuesFile: values.yaml
