@@ -62,3 +62,6 @@ appProject:
       # batch/v1
       - group: batch
         kind: Job
+      # external-secrets.io/v1
+      - group: external-secrets.io
+        kind: SecretStore
