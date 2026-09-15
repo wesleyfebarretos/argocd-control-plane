@@ -65,3 +65,5 @@ appProject:
       # external-secrets.io/v1
       - group: external-secrets.io
         kind: SecretStore
+      - group: external-secrets.io
+        kind: ExternalSecret
