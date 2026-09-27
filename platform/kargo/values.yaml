@@ -1,5 +1,5 @@
 api:
-  host: localhost:8200
+  host: kargo.internal
   adminAccount:
     enabled: false
   oidc:
@@ -8,16 +8,16 @@ api:
       ## @param api.oidc.dex.enabled Whether to enable Dex as the identity provider. When set to true, the Kargo installation will include a Dex server and the Kargo API server will be configured to make the /dex endpoint a reverse proxy for the Dex server.
       enabled: true
       connectors:
-      - id: github
-        name: GitHub
-        type: github
-        config:
-          clientID: Ov23cto1ueChXRpxULeK
-          clientSecret: $CLIENT_SECRET
-          redirectURI: https://localhost:8200/dex/callback
+        - id: github
+          name: GitHub
+          type: github
+          config:
+            clientID: Ov23cto1ueChXRpxULeK
+            clientSecret: $CLIENT_SECRET
+            redirectURI: https://kargo.internal/dex/callback
       env:
-      - name: CLIENT_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: github-dex
-            key: clientSecret
+        - name: CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: github-dex
+              key: clientSecret
