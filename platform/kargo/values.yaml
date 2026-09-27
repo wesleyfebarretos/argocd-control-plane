@@ -8,6 +8,10 @@ api:
     enabled: false
   oidc:
     enabled: true
+    admins:
+      claims:
+        email:
+          - wesleyfebarretos@gmail.com
     dex:
       ## @param api.oidc.dex.enabled Whether to enable Dex as the identity provider. When set to true, the Kargo installation will include a Dex server and the Kargo API server will be configured to make the /dex endpoint a reverse proxy for the Dex server.
       enabled: true
