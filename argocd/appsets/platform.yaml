@@ -53,6 +53,9 @@ spec:
             path: cloudnative-pg
             namespace: cloudnative-pg
             wave: "5"
+          - name: kargo
+            path: kargo
+            namespace: kargo
   template:
     metadata:
       name: "{{ .name }}"
