@@ -7,6 +7,7 @@ helmCharts:
     repo: https://bitnami.github.io/sealed-secrets
     version: 2.20.0
     releaseName: sealed-secrets
+    namespace: kube-system
     includeCRDs: true
     valuesInline:
       fullnameOverride: sealed-secrets-controller
