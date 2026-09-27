@@ -19,6 +19,8 @@ api:
             clientID: Ov23cto1ueChXRpxULeK
             clientSecret: $CLIENT_SECRET
             redirectURI: https://kargo.internal/dex/callback
+            orgs:
+              - name: argocd-platform
       env:
         - name: CLIENT_SECRET
           valueFrom:
