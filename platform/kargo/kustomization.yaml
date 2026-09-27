@@ -6,3 +6,4 @@ helmCharts:
     version: 1.11.4
     namespace: kargo
     releaseName: kargo
+    valuesFile: values.yaml
