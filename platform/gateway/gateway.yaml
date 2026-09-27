@@ -30,6 +30,10 @@ spec:
             kind: Secret
             name: rustfs-tls
             namespace: rustfs
+          - group: ''
+            kind: Secret
+            name: kargo-tls
+            namespace: kargo
       allowedRoutes:
         namespaces:
           from: All

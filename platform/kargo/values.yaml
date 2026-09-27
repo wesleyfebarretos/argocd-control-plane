@@ -1,5 +1,9 @@
 api:
   host: kargo.internal
+  # TLS terminates at the platform Gateway; the API serves plain HTTP internally.
+  tls:
+    enabled: false
+    terminatedUpstream: true
   adminAccount:
     enabled: false
   oidc:
