@@ -1,5 +1,5 @@
 api:
-  host: localhost
+  host: localhost:8200
   adminAccount:
     enabled: false
   oidc:
