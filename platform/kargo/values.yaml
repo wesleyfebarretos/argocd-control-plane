@@ -174,9 +174,9 @@ api:
     ## @param api.adminAccount.enabled Whether to enable the admin account.
     enabled: true
     ## @param api.adminAccount.passwordHash Bcrypt password hash for the admin account. A value **must** be provided for this field unless `api.secret.name` is specified.
-    passwordHash: "JDJhJDEwJElpU3hyWVZZRi5rL1pUeW1nczZJZS5uc1NMdjlSSENiL2lFZnZBNWx4MnRVV3liQ2hGTWFl"
+    passwordHash: "JDJ5JDEwJE1YMU5OQWF0RU5hN1NjZmp2dWczWnUzRDFWZVh1RHVHb01qLmk2Z2I1d0hYZWR1WUIuaHNL"
     ## @param api.adminAccount.tokenSigningKey Key used to sign ID tokens (JWTs) for the admin account. It is suggested that you generate this using a password manager or a command like: `openssl rand -base64 29 \| tr -d "=+/" \| cut`. A value **must** be provided for this field, unless `api.secret.name` is specified.
-    tokenSigningKey: "d3Q5ZFB0Rzg5NFNPTlpoM2E2WURNSm1MRThJamNFVnc="
+    tokenSigningKey: "OFU5M1Jjcm9RRUhsTFB3R1dQMjhJbzBCdGh3TlVjVVM="
     ## @param api.adminAccount.tokenTTL Specifies how long ID tokens for the admin account are valid. (i.e. The expiry will be the time of issue plus this duration.)
     tokenTTL: 24h
   ## Optionally provide custom ClusterRole permissions for the various built in roles. This is
