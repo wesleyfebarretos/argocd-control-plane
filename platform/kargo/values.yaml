@@ -14,7 +14,7 @@ api:
           config:
             clientID: Ov23cto1ueChXRpxULeK
             clientSecret: $CLIENT_SECRET
-            redirectURI: https://localhost:8200/dex/callback
+            redirectURI: https://localhost:8200/login
       env:
         - name: CLIENT_SECRET
           valueFrom:
