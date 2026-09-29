@@ -7,8 +7,6 @@ spec:
   description: Kargo project that allows only kargo.akuity.io/v1alpha1 resources
   sourceRepos:
     - https://github.com/wesleyfebarretos/argocd-applications.git
-  sourceNamespaces:
-    - "*"
   destinations:
     - namespace: '*'
       server: https://kubernetes.default.svc
@@ -17,9 +15,9 @@ spec:
       kind: '*'
   clusterResourceWhitelist:
     - group: 'kargo.akuity.io'
-      kind: 'Project'
+      kind: Project
   namespaceResourceWhitelist:
-    - group: '*'
+    - group: 'kargo.akuity.io'
       kind: '*'
   orphanedResources:
     warn: false
