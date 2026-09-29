@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/argoproj/argo-cd/master/manifests/crds/applicationset-crd.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: kargo-configs
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
+        revision: main
+        directories:
+          - path: tenants/*/*/kargo
+        values:
+          namespace: "{{ index .path.segments 1}}-{{ index .path.segments 2}}"
+  template:
+    metadata:
+      name: "{{ .values.namespace }}-kargo-configs"
+      labels:
+        app.kubernetes.io/name: "{{ .values.namespace }}-kargo-configs"
+        tenant: "{{ .values.tenant }}"
+        project: "{{ .values.project }}"
+        environment: "shared"
+    spec:
+      project: platform
+      sources:
+        repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
+        path: tenants/*/*/kargo
+        targetRevision: main
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{ .values.namespace }}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          # We don't want to create the namespace, because it's already created by the kargo Project resource
+          - CreateNamespace=false
+          - ServerSideApply=true
+          - ApplyOutOfSyncOnly=true

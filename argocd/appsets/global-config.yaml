@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=none
+# yaml-language-server: $schema=https://raw.githubusercontent.com/argoproj/argo-cd/master/manifests/crds/applicationset-crd.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
