@@ -28,7 +28,7 @@ spec:
         project: "{{ .values.project }}"
         environment: "shared"
     spec:
-      project: "{{ .values.project }}"
+      project: kargo
       source:
         repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
         path: "{{ .path.path }}"

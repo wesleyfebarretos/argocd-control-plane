@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: kargo
+  namespace: argocd
+spec:
+  description: Kargo project that allows only kargo.akuity.io/v1alpha1 resources
+  sourceRepos:
+    - https://github.com/wesleyfebarretos/argocd-applications.git
+  sourceNamespaces:
+    - "*"
+  destinations:
+    - namespace: '*'
+      server: https://kubernetes.default.svc
+  clusterResourceBlacklist:
+    - group: '*'
+      kind: '*'
+  clusterResourceWhitelist:
+    - group: 'kargo.akuity.io'
+      kind: 'Project'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  orphanedResources:
+    warn: false
