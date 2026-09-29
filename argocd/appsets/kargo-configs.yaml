@@ -16,6 +16,8 @@ spec:
         directories:
           - path: tenants/*/*/kargo
         values:
+          tenant: "{{ index .path.segments 1}}"
+          project: "{{ index .path.segments 2}}"
           namespace: "{{ index .path.segments 1}}-{{ index .path.segments 2}}"
   template:
     metadata:
@@ -27,9 +29,9 @@ spec:
         environment: "shared"
     spec:
       project: platform
-      sources:
+      source:
         repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
-        path: tenants/*/*/kargo
+        path: "{{ path.path }}"
         targetRevision: main
       destination:
         server: https://kubernetes.default.svc
