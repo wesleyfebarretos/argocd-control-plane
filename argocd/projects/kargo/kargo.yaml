@@ -10,9 +10,6 @@ spec:
   destinations:
     - namespace: '*'
       server: https://kubernetes.default.svc
-  clusterResourceBlacklist:
-    - group: '*'
-      kind: '*'
   clusterResourceWhitelist:
     - group: 'kargo.akuity.io'
       kind: Project
