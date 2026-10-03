@@ -4,6 +4,11 @@ resources:
   - sealedsecrets.yaml
   - certificate.yaml
   - httproute.yaml
+  - project.yaml
+  - warehouse.yaml
+  - custom-promotion-step.yaml
+  - promotion-task.yaml
+  - stages.yaml
 helmCharts:
   - name: kargo
     repo: oci://ghcr.io/akuity/kargo-charts

@@ -1,0 +1,71 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: PromotionTask
+metadata:
+  name: render-platform-manifests
+  namespace: platform
+spec:
+  vars:
+    - name: repoURL
+      value: https://github.com/wesleyfebarretos/argocd-control-plane.git
+    - name: targetBranch
+      value: stage/${{ ctx.stage }}
+    - name: srcPath
+      value: ./src
+    - name: outPath
+      value: ./out
+    - name: openPR
+      value: "false"
+  steps:
+    - uses: git-clone
+      config:
+        repoURL: ${{ vars.repoURL }}
+        checkout:
+          - commit: ${{ commitFrom(vars.repoURL).ID }}
+            path: ${{ vars.srcPath }}
+          - branch: ${{ vars.targetBranch }}
+            create: true
+            path: ${{ vars.outPath }}
+    - uses: git-clear
+      config:
+        path: ${{ vars.outPath }}
+    - uses: render-platform-manifests
+      config:
+        outPath: ${{ vars.outPath }}
+        srcPath: ${{ vars.srcPath }}
+    - uses: git-commit
+      as: commit
+      config:
+        path: ${{ vars.outPath }}
+        message: Render platform manifests from ${{ commitFrom(vars.repoURL).ID }}
+    - if: ${{ vars.openPR != 'true' }}
+      uses: git-push
+      as: push
+      config:
+        path: ${{ vars.outPath }}
+    - if: ${{ vars.openPR == 'true' }}
+      uses: git-push
+      as: push-pr
+      config:
+        path: ${{ vars.outPath }}
+        generateTargetBranch: true
+    - if: ${{ vars.openPR == 'true' }}
+      uses: git-open-pr
+      as: open-pr
+      config:
+        repoURL: ${{ vars.repoURL }}
+        sourceBranch: ${{ task.outputs['push-pr'].branch }}
+        targetBranch: ${{ vars.targetBranch }}
+        title: Render platform manifests for ${{ ctx.stage }}
+  # - if: ${{ status('open-pr') != 'Skipped' }}
+  #   uses: git-wait-for-pr
+  #   as: wait-for-pr
+  #   config:
+  #     repoURL: https://github.com/example/repo.git
+  #     prNumber: ${{ outputs['open-pr'].pr.id }}
+  # - uses: argocd-update
+  #   config:
+  #     apps:
+  #     - name: kargo-demo-${{ ctx.stage }}
+  #       sources:
+  #       - repoURL: ${{ vars.gitopsRepo }}
+  #         desiredRevision: ${{ outputs.commit.commit }}

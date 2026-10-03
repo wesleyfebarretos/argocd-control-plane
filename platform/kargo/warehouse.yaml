@@ -1,0 +1,11 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: argocd-control-plane
+  namespace: platform
+spec:
+  subscriptions:
+    - git:
+        repoURL: https://github.com/wesleyfebarretos/argocd-control-plane.git
+        includePaths:
+          - platform
