@@ -28,10 +28,54 @@ spec:
     - uses: git-clear
       config:
         path: ${{ vars.outPath }}
-    - uses: render-platform-manifests
+    - uses: kustomize-build
       config:
-        outPath: ${{ vars.outPath }}
-        srcPath: ${{ vars.srcPath }}
+        path: ${{ vars.srcPath }}/platform/argocd
+        outPath: ${{ vars.outPath }}/argocd/manifests.yaml
+    - uses: kustomize-build
+      config:
+        path: ${{ vars.srcPath }}/platform/cert-manager
+        outPath: ${{ vars.outPath }}/cert-manager/manifests.yaml
+    - uses: kustomize-build
+      config:
+        path: ${{ vars.srcPath }}/platform/cloudnative-pg
+        outPath: ${{ vars.outPath }}/cloudnative-pg/manifests.yaml
+    - uses: kustomize-build
+      config:
+        path: ${{ vars.srcPath }}/platform/envoy-gateway
+        outPath: ${{ vars.outPath }}/envoy-gateway/manifests.yaml
+    - uses: kustomize-build
+      config:
+        path: ${{ vars.srcPath }}/platform/envoy-proxy
+        outPath: ${{ vars.outPath }}/envoy-proxy/manifests.yaml
+    - uses: kustomize-build
+      config:
+        path: ${{ vars.srcPath }}/platform/external-secrets
+        outPath: ${{ vars.outPath }}/external-secrets/manifests.yaml
+    - uses: kustomize-build
+      config:
+        path: ${{ vars.srcPath }}/platform/gateway
+        outPath: ${{ vars.outPath }}/gateway/manifests.yaml
+    - uses: kustomize-build
+      config:
+        path: ${{ vars.srcPath }}/platform/kargo
+        outPath: ${{ vars.outPath }}/kargo/manifests.yaml
+    - uses: kustomize-build
+      config:
+        path: ${{ vars.srcPath }}/platform/metrics-server
+        outPath: ${{ vars.outPath }}/metrics-server/manifests.yaml
+    - uses: kustomize-build
+      config:
+        path: ${{ vars.srcPath }}/platform/rustfs
+        outPath: ${{ vars.outPath }}/rustfs/manifests.yaml
+    - uses: kustomize-build
+      config:
+        path: ${{ vars.srcPath }}/platform/sealed-secrets
+        outPath: ${{ vars.outPath }}/sealed-secrets/manifests.yaml
+    - uses: kustomize-build
+      config:
+        path: ${{ vars.srcPath }}/platform/vault
+        outPath: ${{ vars.outPath }}/vault/manifests.yaml
     - uses: git-commit
       as: commit
       config:
