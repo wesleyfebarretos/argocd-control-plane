@@ -1,0 +1,26 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: kind
+  namespace: envoy-gateway-system
+spec:
+  provider:
+    kubernetes:
+      envoyService:
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              ports:
+              - name: http
+                nodePort: 30080
+                port: 80
+                protocol: TCP
+                targetPort: 10080
+              - name: https
+                nodePort: 30443
+                port: 443
+                protocol: TCP
+                targetPort: 10443
+        type: NodePort
+    type: Kubernetes
