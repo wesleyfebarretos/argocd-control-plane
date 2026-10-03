@@ -15,4 +15,5 @@ helmCharts:
     version: 1.11.4
     namespace: kargo
     releaseName: kargo
+    includeCRDs: true
     valuesFile: values.yaml
