@@ -10,8 +10,8 @@ spec:
   generators:
     - list:
         elements:
-          - name: kargo
-            path: kargo
+          - name: kargo2
+            path: kargo2
             namespace: kargo
             wave: "-10"
   template:
