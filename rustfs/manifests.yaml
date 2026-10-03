@@ -1,0 +1,302 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rustfs
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: rustfs-cert
+spec:
+  dnsNames:
+  - rustfs.internal
+  issuerRef:
+    kind: ClusterIssuer
+    name: platform-selfsigned
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  secretName: rustfs-tls
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: ReferenceGrant
+metadata:
+  name: allow-platform-gateway-tls
+  namespace: rustfs
+spec:
+  from:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    namespace: envoy-gateway-system
+  to:
+  - group: ""
+    kind: Secret
+    name: rustfs-tls
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  labels:
+    app.kubernetes.io/component: networking
+    app.kubernetes.io/instance: rustfs-http-route
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/name: rustfs
+    app.kubernetes.io/part-of: rustfs
+  name: rustfs
+spec:
+  hostnames:
+  - rustfs.internal
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: platform
+    namespace: envoy-gateway-system
+    sectionName: https
+  rules:
+  - backendRefs:
+    - name: rustfs-svc
+      port: 9001
+      weight: 1
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/instance: rustfs
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: rustfs
+    app.kubernetes.io/version: 1.0.0-rc.3
+    helm.sh/chart: rustfs-1.0.0-rc.3
+  name: rustfs
+  namespace: rustfs
+---
+apiVersion: v1
+data:
+  RUSTFS_ACCESS_KEY: cnVzdGZzYWRtaW4=
+  RUSTFS_SECRET_KEY: cnVzdGZzYWRtaW4=
+kind: Secret
+metadata:
+  labels: {}
+  name: rustfs-secret
+  namespace: rustfs
+type: Opaque
+---
+apiVersion: v1
+data:
+  RUSTFS_ADDRESS: :9000
+  RUSTFS_CONSOLE_ADDRESS: :9001
+  RUSTFS_CONSOLE_ENABLE: "true"
+  RUSTFS_OBS_ENVIRONMENT: development
+  RUSTFS_OBS_LOG_DIRECTORY: /logs
+  RUSTFS_OBS_LOGGER_LEVEL: info
+  RUSTFS_REGION: us-east-1
+  RUSTFS_VOLUMES: /data
+kind: ConfigMap
+metadata:
+  labels: {}
+  name: rustfs-config
+  namespace: rustfs
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    helm.sh/resource-policy: keep
+  labels: {}
+  name: rustfs-data
+  namespace: rustfs
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    helm.sh/resource-policy: keep
+  labels: {}
+  name: rustfs-logs
+  namespace: rustfs
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: rustfs
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: rustfs
+    app.kubernetes.io/version: 1.0.0-rc.3
+    helm.sh/chart: rustfs-1.0.0-rc.3
+  name: rustfs-svc
+  namespace: rustfs
+spec:
+  ports:
+  - name: endpoint
+    port: 9000
+    targetPort: 9000
+  - name: console
+    port: 9001
+    targetPort: 9001
+  selector:
+    app.kubernetes.io/instance: rustfs
+    app.kubernetes.io/name: rustfs
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: rustfs
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: rustfs
+    app.kubernetes.io/version: 1.0.0-rc.3
+    helm.sh/chart: rustfs-1.0.0-rc.3
+  name: rustfs
+  namespace: rustfs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: rustfs
+      app.kubernetes.io/name: rustfs
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: rustfs
+        app.kubernetes.io/name: rustfs
+    spec:
+      affinity: null
+      containers:
+      - command:
+        - /usr/bin/rustfs
+        envFrom:
+        - configMapRef:
+            name: rustfs-config
+        - secretRef:
+            name: rustfs-secret
+        image: rustfs/rustfs:1.0.0-rc.3
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 9000
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 3
+        name: rustfs
+        ports:
+        - containerPort: 9000
+          name: endpoint
+        - containerPort: 9001
+          name: console
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health/ready
+            port: 9000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 3
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+        volumeMounts:
+        - mountPath: /logs
+          name: logs
+          subPath: logs
+        - mountPath: /data
+          name: data
+      imagePullSecrets: []
+      initContainers:
+      - command:
+        - sh
+        - -c
+        - |
+          mkdir -p /data
+          mkdir -p /mnt/rustfs/logs
+          chmod 755 /mnt/rustfs/logs
+        image: busybox:stable
+        imagePullPolicy: IfNotPresent
+        name: init-step
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        - mountPath: /mnt/rustfs
+          name: logs
+      priorityClassName: null
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsUser: 10001
+      serviceAccountName: rustfs
+      volumes:
+      - name: logs
+        persistentVolumeClaim:
+          claimName: rustfs-logs
+      - name: data
+        persistentVolumeClaim:
+          claimName: rustfs-data
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    helm.sh/hook: test
+  labels:
+    app.kubernetes.io/instance: rustfs
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: rustfs
+    app.kubernetes.io/version: 1.0.0-rc.3
+    helm.sh/chart: rustfs-1.0.0-rc.3
+  name: rustfs-test-connection
+  namespace: rustfs
+spec:
+  containers:
+  - args:
+    - -O
+    - /dev/null
+    - rustfs-svc:9000/health
+    command:
+    - wget
+    image: busybox:stable
+    imagePullPolicy: IfNotPresent
+    name: wget
+  restartPolicy: Never
