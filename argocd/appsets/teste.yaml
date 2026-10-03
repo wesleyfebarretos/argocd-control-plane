@@ -28,7 +28,7 @@ spec:
       project: platform
       source:
         repoURL: https://github.com/wesleyfebarretos/argocd-control-plane.git
-        targetRevision: main
+        targetRevision: stage/prod
         path: "{{ .path }}"
       destination:
         server: https://kubernetes.default.svc
