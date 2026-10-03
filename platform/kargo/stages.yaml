@@ -36,6 +36,6 @@ spec:
       steps:
         - task:
             name: render-platform-manifests
-            vars:
-              - name: openPR
-                value: "true"
+          vars:
+            - name: openPR
+              value: "true"
