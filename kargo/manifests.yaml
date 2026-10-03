@@ -9111,6 +9111,182 @@ spec:
     kind: Secret
     name: kargo-tls
 ---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Project
+metadata:
+  annotations:
+    kargo.akuity.io/keep-namespace: "true"
+  name: platform
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: ProjectConfig
+metadata:
+  name: platform
+  namespace: platform
+spec:
+  promotionPolicies:
+  - autoPromotionEnabled: true
+    stageSelector:
+      name: dev
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: PromotionTask
+metadata:
+  name: render-platform-manifests
+  namespace: platform
+spec:
+  steps:
+  - config:
+      checkout:
+      - commit: ${{ commitFrom(vars.repoURL).ID }}
+        path: ${{ vars.srcPath }}
+      - branch: ${{ vars.targetBranch }}
+        create: true
+        path: ${{ vars.outPath }}
+      repoURL: ${{ vars.repoURL }}
+    uses: git-clone
+  - config:
+      path: ${{ vars.outPath }}
+    uses: git-clear
+  - config:
+      outPath: ${{ vars.outPath }}/argocd/manifests.yaml
+      path: ${{ vars.srcPath }}/platform/argocd
+    uses: kustomize-build
+  - config:
+      outPath: ${{ vars.outPath }}/cert-manager/manifests.yaml
+      path: ${{ vars.srcPath }}/platform/cert-manager
+    uses: kustomize-build
+  - config:
+      outPath: ${{ vars.outPath }}/cloudnative-pg/manifests.yaml
+      path: ${{ vars.srcPath }}/platform/cloudnative-pg
+    uses: kustomize-build
+  - config:
+      outPath: ${{ vars.outPath }}/envoy-gateway/manifests.yaml
+      path: ${{ vars.srcPath }}/platform/envoy-gateway
+    uses: kustomize-build
+  - config:
+      outPath: ${{ vars.outPath }}/envoy-proxy/manifests.yaml
+      path: ${{ vars.srcPath }}/platform/envoy-proxy
+    uses: kustomize-build
+  - config:
+      outPath: ${{ vars.outPath }}/external-secrets/manifests.yaml
+      path: ${{ vars.srcPath }}/platform/external-secrets
+    uses: kustomize-build
+  - config:
+      outPath: ${{ vars.outPath }}/gateway/manifests.yaml
+      path: ${{ vars.srcPath }}/platform/gateway
+    uses: kustomize-build
+  - config:
+      outPath: ${{ vars.outPath }}/kargo/manifests.yaml
+      path: ${{ vars.srcPath }}/platform/kargo
+    uses: kustomize-build
+  - config:
+      outPath: ${{ vars.outPath }}/metrics-server/manifests.yaml
+      path: ${{ vars.srcPath }}/platform/metrics-server
+    uses: kustomize-build
+  - config:
+      outPath: ${{ vars.outPath }}/rustfs/manifests.yaml
+      path: ${{ vars.srcPath }}/platform/rustfs
+    uses: kustomize-build
+  - config:
+      outPath: ${{ vars.outPath }}/sealed-secrets/manifests.yaml
+      path: ${{ vars.srcPath }}/platform/sealed-secrets
+    uses: kustomize-build
+  - config:
+      outPath: ${{ vars.outPath }}/vault/manifests.yaml
+      path: ${{ vars.srcPath }}/platform/vault
+    uses: kustomize-build
+  - as: commit
+    config:
+      message: Render platform manifests from ${{ commitFrom(vars.repoURL).ID }}
+      path: ${{ vars.outPath }}
+    uses: git-commit
+  - as: push
+    config:
+      path: ${{ vars.outPath }}
+    if: ${{ vars.openPR != 'true' }}
+    uses: git-push
+  - as: push-pr
+    config:
+      generateTargetBranch: true
+      path: ${{ vars.outPath }}
+    if: ${{ vars.openPR == 'true' }}
+    uses: git-push
+  - as: open-pr
+    config:
+      repoURL: ${{ vars.repoURL }}
+      sourceBranch: ${{ task.outputs['push-pr'].branch }}
+      targetBranch: ${{ vars.targetBranch }}
+      title: Render platform manifests for ${{ ctx.stage }}
+    if: ${{ vars.openPR == 'true' }}
+    uses: git-open-pr
+  vars:
+  - name: repoURL
+    value: https://github.com/wesleyfebarretos/argocd-control-plane.git
+  - name: targetBranch
+    value: stage/${{ ctx.stage }}
+  - name: srcPath
+    value: ./src
+  - name: outPath
+    value: ./out
+  - name: openPR
+    value: "false"
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: dev
+  namespace: platform
+spec:
+  promotionTemplate:
+    spec:
+      steps:
+      - task:
+          name: render-platform-manifests
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: argocd-control-plane
+    sources:
+      autoPromotionOptions:
+        selectionPolicy: NewestFreight
+      direct: true
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: prod
+  namespace: platform
+spec:
+  promotionTemplate:
+    spec:
+      steps:
+      - task:
+          name: render-platform-manifests
+        vars:
+        - name: openPR
+          value: "true"
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: argocd-control-plane
+    sources:
+      stages:
+      - dev
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: argocd-control-plane
+  namespace: platform
+spec:
+  subscriptions:
+  - git:
+      branch: main
+      includePaths:
+      - platform
+      repoURL: https://github.com/wesleyfebarretos/argocd-control-plane.git
+---
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
