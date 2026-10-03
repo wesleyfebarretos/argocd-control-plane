@@ -63,16 +63,33 @@ jobs:
             exit 1
           fi
 
+          pids=()
+          names=()
           for kust in "${kustomizations[@]}"; do
             component="$(basename "$(dirname "${kust}")")"
-            echo "Rendering ${component}"
-            mkdir -p "${rendered}/${component}"
-            kustomize build "platform/${component}" --enable-helm > "${rendered}/${component}/manifests.yaml"
-            if [[ ! -s "${rendered}/${component}/manifests.yaml" ]]; then
-              echo "kustomize produced an empty manifest for ${component}" >&2
-              exit 1
+            (
+              echo "Rendering ${component}"
+              mkdir -p "${rendered}/${component}"
+              kustomize build "platform/${component}" --enable-helm > "${rendered}/${component}/manifests.yaml"
+              if [[ ! -s "${rendered}/${component}/manifests.yaml" ]]; then
+                echo "kustomize produced an empty manifest for ${component}" >&2
+                exit 1
+              fi
+            ) &
+            pids+=("$!")
+            names+=("${component}")
+          done
+
+          failed=0
+          for i in "${!pids[@]}"; do
+            if ! wait "${pids[$i]}"; then
+              echo "Render failed for ${names[$i]}" >&2
+              failed=1
             fi
           done
+          if (( failed != 0 )); then
+            exit 1
+          fi
 
           if git ls-remote --exit-code --heads origin manifests >/dev/null; then
             echo "Branch manifests already exists"
@@ -89,7 +106,9 @@ jobs:
           # gitignored on main, but this branch has no gitignore, so adding the
           # worktree would commit them. Build the tree from the rendered files only.
           git_dir="$(git rev-parse --absolute-git-dir)"
+          # mktemp creates an empty file. Git rejects that as an index, so the path must not exist yet.
           index_file="$(mktemp)"
+          rm -f "${index_file}"
           pushd "${rendered}" >/dev/null
           GIT_INDEX_FILE="${index_file}" git --git-dir="${git_dir}" add -A .
           tree="$(GIT_INDEX_FILE="${index_file}" git --git-dir="${git_dir}" write-tree)"
