@@ -6,7 +6,6 @@ resources:
   - httproute.yaml
   - project.yaml
   - warehouse.yaml
-  - custom-promotion-step.yaml
   - promotion-task.yaml
   - stages.yaml
 helmCharts:
