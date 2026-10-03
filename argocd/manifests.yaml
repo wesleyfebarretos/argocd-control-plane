@@ -31814,7 +31814,7 @@ data:
       - UpdateRequest
   statusbadge.enabled: "false"
   timeout.hard.reconciliation: 0s
-  timeout.reconciliation: 180s
+  timeout.reconciliation: 90s
   timeout.reconciliation.jitter: 60s
   url: https://argocd.internal
 kind: ConfigMap
@@ -32519,7 +32519,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/cm: e2784ad47c1c33ff33d797397e88d746ee2995fc625d5271ac69fb2ba53ec1df
+        checksum/cm: ded59306b3018b000645405e6d56020e84fb40c09ec74b999c9d031f99e6bde4
         checksum/cmd-params: de6159b914d27c3fc8ebf0073b78874fd62f3bd6e9b4c739080525a5aa2782eb
       labels:
         app.kubernetes.io/component: dex-server
@@ -32890,7 +32890,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/cm: e2784ad47c1c33ff33d797397e88d746ee2995fc625d5271ac69fb2ba53ec1df
+        checksum/cm: ded59306b3018b000645405e6d56020e84fb40c09ec74b999c9d031f99e6bde4
         checksum/cmd-params: de6159b914d27c3fc8ebf0073b78874fd62f3bd6e9b4c739080525a5aa2782eb
         checksum/cmp-cm: 4abeec0b717fc0690fc86743df22d9286522c75e1dd60bd878f589bbd347227a
       labels:
@@ -33340,7 +33340,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/cm: e2784ad47c1c33ff33d797397e88d746ee2995fc625d5271ac69fb2ba53ec1df
+        checksum/cm: ded59306b3018b000645405e6d56020e84fb40c09ec74b999c9d031f99e6bde4
         checksum/cmd-params: de6159b914d27c3fc8ebf0073b78874fd62f3bd6e9b4c739080525a5aa2782eb
       labels:
         app.kubernetes.io/component: server
@@ -33803,7 +33803,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/cm: e2784ad47c1c33ff33d797397e88d746ee2995fc625d5271ac69fb2ba53ec1df
+        checksum/cm: ded59306b3018b000645405e6d56020e84fb40c09ec74b999c9d031f99e6bde4
         checksum/cmd-params: de6159b914d27c3fc8ebf0073b78874fd62f3bd6e9b4c739080525a5aa2782eb
       labels:
         app.kubernetes.io/component: application-controller
