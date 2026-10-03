@@ -1,0 +1,137 @@
+name: Render platform manifests
+"on":
+  push:
+    branches:
+      - main
+concurrency:
+  group: render-platform-manifests
+  cancel-in-progress: true
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  render:
+    name: Render component manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.17.4
+      - name: Install Kustomize
+        run: |
+          set -euo pipefail
+          version=v5.8.1
+          case "$(uname -m)" in
+            x86_64) arch=amd64 ;;
+            aarch64) arch=arm64 ;;
+            *)
+              echo "Unsupported architecture: $(uname -m)" >&2
+              exit 1
+              ;;
+          esac
+          curl -fsSL -o /tmp/kustomize.tar.gz \
+            "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${version}/kustomize_${version}_linux_${arch}.tar.gz"
+          tar -xzf /tmp/kustomize.tar.gz -C /tmp
+          sudo install -m 0755 /tmp/kustomize /usr/local/bin/kustomize
+          kustomize version
+          helm version --short
+      - name: Render manifests and open pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          rendered="${RUNNER_TEMP}/platform-manifests"
+          rm -rf "${rendered}"
+          mkdir -p "${rendered}"
+
+          shopt -s nullglob
+          kustomizations=(platform/*/kustomization.yaml)
+          if (( ${#kustomizations[@]} == 0 )); then
+            echo "No platform components with a kustomization.yaml were found." >&2
+            exit 1
+          fi
+
+          for kust in "${kustomizations[@]}"; do
+            component="$(basename "$(dirname "${kust}")")"
+            echo "Rendering ${component}"
+            mkdir -p "${rendered}/${component}"
+            kustomize build "platform/${component}" --enable-helm > "${rendered}/${component}/manifests.yaml"
+            if [[ ! -s "${rendered}/${component}/manifests.yaml" ]]; then
+              echo "kustomize produced an empty manifest for ${component}" >&2
+              exit 1
+            fi
+          done
+
+          if git ls-remote --exit-code --heads origin manifests >/dev/null; then
+            echo "Branch manifests already exists"
+          else
+            echo "Creating empty manifests branch"
+            empty_tree="$(git mktree </dev/null)"
+            init_commit="$(git commit-tree "${empty_tree}" -m "Initialize manifests branch")"
+            git push origin "${init_commit}:refs/heads/manifests"
+          fi
+
+          git fetch origin refs/heads/manifests:refs/remotes/origin/manifests
+          # Chart inflation can leave charts/ behind in the source checkout.
+          git reset --hard
+          git clean -fd
+          git switch -C render/manifests origin/manifests
+
+          # Same idea as Kargo git-clear: drop the previous render before writing
+          # the new one, so removed components do not survive into the pull request.
+          if [[ -n "$(git ls-files)" ]]; then
+            git rm -rf .
+          fi
+
+          cp -a "${rendered}/." .
+          git add --all
+
+          if git diff --cached --quiet; then
+            echo "Rendered manifests already match the manifests branch."
+            exit 0
+          fi
+
+          git -c user.name="github-actions[bot]" \
+            -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "Render platform manifests from ${SOURCE_SHA}"
+
+          if git ls-remote --exit-code --heads origin render/manifests >/dev/null; then
+            expected="$(git ls-remote origin refs/heads/render/manifests | awk '{print $1}')"
+            git push --force-with-lease="refs/heads/render/manifests:${expected}" origin HEAD:refs/heads/render/manifests
+          else
+            git push origin HEAD:refs/heads/render/manifests
+          fi
+
+          existing="$(gh pr list --base manifests --head render/manifests --state open --json number --jq '.[0].number')"
+          if [[ -n "${existing}" && "${existing}" != "null" ]]; then
+            echo "Updated pull request #${existing}"
+            exit 0
+          fi
+
+          component_list="$(find "${rendered}" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort | sed 's/^/- /')"
+          body_file="${RUNNER_TEMP}/pr-body.md"
+          cat > "${body_file}" <<EOF
+          Fresh render of each \`platform/*/kustomization.yaml\` with \`kustomize build --enable-helm\`.
+
+          The target tree was cleared before these files were written, so this pull request is a full replacement of the previous render.
+
+          Source commit: \`${SOURCE_SHA}\`
+
+          Components:
+          ${component_list}
+          EOF
+          sed -i 's/^[[:space:]]*//' "${body_file}"
+
+          gh pr create \
+            --base manifests \
+            --head render/manifests \
+            --title "Render platform manifests" \
+            --body-file "${body_file}"
