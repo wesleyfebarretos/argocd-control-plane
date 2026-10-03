@@ -36,7 +36,7 @@ configs:
             groups:
               - argocd-labs/developers
     exec.enabled: 'true'
-    timeout.reconciliation: 90s
+    timeout.reconciliation: 180s
     application.resourceTrackingMethod: annotation
     # Enable kustomize build options to allow the use of helm charts
     kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
