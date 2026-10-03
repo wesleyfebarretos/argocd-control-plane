@@ -7,5 +7,6 @@ spec:
   subscriptions:
     - git:
         repoURL: https://github.com/wesleyfebarretos/argocd-control-plane.git
+        branch: main
         includePaths:
           - platform
