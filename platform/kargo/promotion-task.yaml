@@ -100,16 +100,20 @@ spec:
         sourceBranch: ${{ task.outputs['push-pr'].branch }}
         targetBranch: ${{ vars.targetBranch }}
         title: Render platform manifests for ${{ ctx.stage }}
-  # - if: ${{ status('open-pr') != 'Skipped' }}
-  #   uses: git-wait-for-pr
-  #   as: wait-for-pr
-  #   config:
-  #     repoURL: https://github.com/example/repo.git
-  #     prNumber: ${{ outputs['open-pr'].pr.id }}
-  # - uses: argocd-update
-  #   config:
-  #     apps:
-  #     - name: kargo-demo-${{ ctx.stage }}
-  #       sources:
-  #       - repoURL: ${{ vars.gitopsRepo }}
-  #         desiredRevision: ${{ outputs.commit.commit }}
+    - if: ${{ vars.openPR == 'true' && status('task-1::open-pr') != 'Skipped' }}
+      uses: git-wait-for-pr
+      as: wait-for-pr
+      config:
+        repoURL: ${{ vars.repoURL }}
+        prNumber: ${{ task.outputs['open-pr'].pr.id }}
+    - if: ${{ len(vars.apps) > 0 && (vars.openPR != 'true' || status('task-1::open-pr') == 'Succeeded') }}
+      uses: argocd-update
+      config:
+        apps:
+          - selector:
+              matchLabels:
+                environment: ${{ ctx.stage }}
+                team: platform
+            sources:
+              - repoURL: ${{ vars.repoURL }}
+                desiredRevision: ${{ if vars.openPR == 'true' { task.outputs['wait-for-pr'].commit } else { task.outputs.push.commit } }}

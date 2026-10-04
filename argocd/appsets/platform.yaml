@@ -53,9 +53,12 @@ spec:
       finalizers:
         - resources-finalizer.argocd.argoproj.io
       annotations:
+        kargo.akuity.io/authorized-stage: platform:prod
         argocd.argoproj.io/sync-wave: "{{ .wave }}"
       labels:
         app.kubernetes.io/part-of: platform
+        environment: prod
+        team: platform
     spec:
       project: platform
       source:
