@@ -3,6 +3,8 @@ kind: Warehouse
 metadata:
   name: argocd-control-plane
   namespace: platform
+  annotations:
+    teste: teste
 spec:
   subscriptions:
     - git:
