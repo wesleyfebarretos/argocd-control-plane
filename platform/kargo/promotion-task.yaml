@@ -106,7 +106,7 @@ spec:
       config:
         repoURL: ${{ vars.repoURL }}
         prNumber: ${{ task.outputs['open-pr'].pr.id }}
-    - if: ${{ len(vars.apps) > 0 && (vars.openPR != 'true' || status('task-1::open-pr') == 'Succeeded') }}
+    - if: ${{ vars.openPR != 'true' || status('task-1::open-pr') == 'Succeeded' }}
       uses: argocd-update
       config:
         apps:
