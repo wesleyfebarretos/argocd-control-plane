@@ -115,8 +115,8 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 10Giaaaa
-  storageClassName: standardaaaaaaa
+      storage: 10Gi
+  storageClassName: standard
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -131,8 +131,8 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 10Giaaa
-  storageClassName: standardaaaaaaa
+      storage: 10Gi
+  storageClassName: standard
 ---
 apiVersion: v1
 kind: Service
