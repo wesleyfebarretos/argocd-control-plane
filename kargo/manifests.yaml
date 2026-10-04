@@ -214,8 +214,7 @@ spec:
         - desiredRevision: ${{ if vars.openPR == 'true' { task.outputs['wait-for-pr'].commit
             } else { task.outputs.push.commit } }}
           repoURL: ${{ vars.repoURL }}
-    if: ${{ len(vars.apps) > 0 && (vars.openPR != 'true' || status('task-1::open-pr')
-      == 'Succeeded') }}
+    if: ${{ vars.openPR != 'true' || status('task-1::open-pr') == 'Succeeded' }}
     uses: argocd-update
   vars:
   - name: repoURL
