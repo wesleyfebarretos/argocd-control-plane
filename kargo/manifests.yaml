@@ -97,6 +97,8 @@ spec:
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Warehouse
 metadata:
+  annotations:
+    teste: teste
   name: argocd-control-plane
   namespace: platform
 spec:
