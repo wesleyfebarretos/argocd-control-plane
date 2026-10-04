@@ -198,6 +198,25 @@ spec:
       title: Render platform manifests for ${{ ctx.stage }}
     if: ${{ vars.openPR == 'true' }}
     uses: git-open-pr
+  - as: wait-for-pr
+    config:
+      prNumber: ${{ task.outputs['open-pr'].pr.id }}
+      repoURL: ${{ vars.repoURL }}
+    if: ${{ vars.openPR == 'true' && status('task-1::open-pr') != 'Skipped' }}
+    uses: git-wait-for-pr
+  - config:
+      apps:
+      - selector:
+          matchLabels:
+            environment: ${{ ctx.stage }}
+            team: platform
+        sources:
+        - desiredRevision: ${{ if vars.openPR == 'true' { task.outputs['wait-for-pr'].commit
+            } else { task.outputs.push.commit } }}
+          repoURL: ${{ vars.repoURL }}
+    if: ${{ len(vars.apps) > 0 && (vars.openPR != 'true' || status('task-1::open-pr')
+      == 'Succeeded') }}
+    uses: argocd-update
   vars:
   - name: repoURL
     value: https://github.com/wesleyfebarretos/argocd-control-plane.git
