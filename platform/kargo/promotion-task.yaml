@@ -81,12 +81,12 @@ spec:
       config:
         path: ${{ vars.outPath }}
         message: Render platform manifests from ${{ commitFrom(vars.repoURL).ID }}
-    - if: ${{ vars.openPR != 'true' }}
+    - if: ${{ vars.openPR != 'true' && status('commit') == 'Succeeded' }}
       uses: git-push
       as: push
       config:
         path: ${{ vars.outPath }}
-    - if: ${{ vars.openPR == 'true' }}
+    - if: ${{ vars.openPR == 'true' && status('commit') == 'Succeeded' }}
       uses: git-push
       as: push-pr
       config:
