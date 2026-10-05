@@ -182,13 +182,13 @@ spec:
   - as: push
     config:
       path: ${{ vars.outPath }}
-    if: ${{ vars.openPR != 'true' }}
+    if: ${{ vars.openPR != 'true' && status('commit') == 'Succeeded' }}
     uses: git-push
   - as: push-pr
     config:
       generateTargetBranch: true
       path: ${{ vars.outPath }}
-    if: ${{ vars.openPR == 'true' }}
+    if: ${{ vars.openPR == 'true' && status('commit') == 'Succeeded' }}
     uses: git-push
   - as: open-pr
     config:
