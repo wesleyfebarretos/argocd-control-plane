@@ -92,7 +92,7 @@ spec:
       config:
         path: ${{ vars.outPath }}
         generateTargetBranch: true
-    - if: ${{ vars.openPR == 'true' }}
+    - if: ${{ vars.openPR == 'true' && status('push-pr') == 'Succeeded' }}
       uses: git-open-pr
       as: open-pr
       config:
@@ -100,13 +100,13 @@ spec:
         sourceBranch: ${{ task.outputs['push-pr'].branch }}
         targetBranch: ${{ vars.targetBranch }}
         title: Render platform manifests for ${{ ctx.stage }}
-    - if: ${{ vars.openPR == 'true' && status('task-1::open-pr') != 'Skipped' }}
+    - if: ${{ status('open-pr') == 'Succeeded' }}
       uses: git-wait-for-pr
       as: wait-for-pr
       config:
         repoURL: ${{ vars.repoURL }}
-        prNumber: ${{ task.outputs['open-pr'].pr.id }}
-    - if: ${{ vars.openPR != 'true' || status('task-1::open-pr') == 'Succeeded' }}
+        prNumber: ${{ task.outputs['open-pr']?.pr?.id ?? 0 }}
+    - if: ${{ (vars.openPR != 'true' && status('push') == 'Succeeded') || status('wait-for-pr') == 'Succeeded' }}
       uses: argocd-update
       config:
         apps:
@@ -116,4 +116,4 @@ spec:
                 team: platform
             sources:
               - repoURL: ${{ vars.repoURL }}
-                desiredRevision: ${{ if vars.openPR == 'true' { task.outputs['wait-for-pr'].commit } else { task.outputs.push.commit } }}
+                desiredRevision: "${{ vars.openPR == 'true' ? task.outputs['wait-for-pr'].commit : task.outputs['push'].commit }}"
