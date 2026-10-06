@@ -7,4 +7,4 @@ spec:
     - name: github-webhook-receiver
       github:
         secretRef:
-          name: github-webhook-secret
+          name: github-webhook-secrett
