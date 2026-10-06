@@ -8,6 +8,7 @@ resources:
   - warehouse.yaml
   - promotion-task.yaml
   - stages.yaml
+  - clusterconfig.yaml
 helmCharts:
   - name: kargo
     repo: oci://ghcr.io/akuity/kargo-charts
