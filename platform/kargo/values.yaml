@@ -31,3 +31,8 @@ api:
             secretKeyRef:
               name: github-dex
               key: clientSecret
+externalWebhooksServer:
+  host: kargo.internal
+  tls:
+    enabled: false
+    terminatedUpstream: true

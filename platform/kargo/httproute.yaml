@@ -15,6 +15,13 @@ spec:
     - matches:
         - path:
             type: PathPrefix
+            value: /github/
+      backendRefs:
+        - name: kargo-external-webhooks-server
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
             value: /
       backendRefs:
         - name: kargo-api
