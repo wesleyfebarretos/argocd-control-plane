@@ -302,7 +302,7 @@ spec:
   webhookReceivers:
   - github:
       secretRef:
-        name: github-webhook-secret
+        name: github-webhook-secrett
     name: github-webhook-receiver
 ---
 apiVersion: v1
