@@ -24,6 +24,22 @@ spec:
       labels:
         kargo.akuity.io/cred-type: git
 ---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  labels:
+    kargo.akuity.io/cred-type: generic
+  name: github-webhook-secret
+  namespace: kargo-cluster-secrets
+spec:
+  encryptedData:
+    secret: AgCwKxyJF1hAMPuqqVfydAyVaV8f9TJO8iPP/Q9bSY/lfyQjwBLgg26sqrn3TOEsDHXF2ThQterfN8rxyl4EJJQ5WKvbdqeZBLL2/S5mJdoPjyAonRFaHtQAwt5qxTrZt3po3ljah2vOpaw5nSWGE5Y9P7hDKS92tsqYNMJRAHgpco8m0finORiUt0c6bBgBja88g3ygXX46/KMGBITYO5eYhgx+yLRngGr9FcLukuSAXNN//XpoX/oV7csV2x4T2yNXpuf+sy+7NJOmGRJWk3DqC7vxw4gJkIhP6Vs2ug310d45WRLf4Ou1/xtK8dLwnaVzJFm4ibBgNWjWsPI/EOnoHhDRIvvT875SEBJdFy43PbXQ4yvPJwqLiL4j/fuNnr+j9bdIzqL1d1j4mev98KCX9I6qb02W+Fuvs07QLKgl+akpHG9oVYw27EH35+38vz9hp1a4uMcMwJG4hYuDMzsAQIQvFiuXrl2kp6rFN1x6NUIfEIxQL4K7WH1UINpGHLfA6v4Ec7fma0cdp4woojHpNf27SfIdo6PLGYhtZ6m0aSAvj5cnntS9rNph5ejUhSOL/SwIl03OyTzhpZ2Zja9c/Knf5L6MDZKEm3JuuRoSHCcQoTLoDWx2qcpjf4phmfZ3EA7XCDS58mc8Cji8V510Nf/H6v1SdGt62AWaMapLW8sZO19rTLWH24vfkiXoq4xTVQVWHrwdMQ+Je0LfSlnA1sgK18xcX4oq32XzF1Ajaw==
+  template:
+    metadata:
+      labels:
+        kargo.akuity.io/cred-type: generic
+    type: Opaque
+---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
