@@ -287,6 +287,17 @@ spec:
       stages:
       - dev
 ---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: ClusterConfig
+metadata:
+  name: cluster
+spec:
+  webhookReceivers:
+  - github:
+      secretRef:
+        name: github-webhook-secret
+    name: github-webhook-receiver
+---
 apiVersion: v1
 kind: Namespace
 metadata:
