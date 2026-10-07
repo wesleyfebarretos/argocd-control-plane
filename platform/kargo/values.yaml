@@ -36,3 +36,7 @@ externalWebhooksServer:
   tls:
     enabled: false
     terminatedUpstream: true
+controller:
+  reconcilers:
+    warehouses:
+      minReconciliationInterval: 5m
