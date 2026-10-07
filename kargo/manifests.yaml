@@ -610,7 +610,7 @@ data:
   MAX_CONCURRENT_WAREHOUSE_RECONCILES: "4"
   MAX_IMAGE_CACHE_ENTRIES: "100000"
   MAX_OCI_PUSH_ARTIFACT_SIZE: "1073741824"
-  MIN_WAREHOUSE_RECONCILIATION_INTERVAL: 5m0s
+  MIN_WAREHOUSE_RECONCILIATION_INTERVAL: 5m
   ROLLOUTS_CONTROLLER_INSTANCE_ID: ""
   ROLLOUTS_INTEGRATION_ENABLED: "true"
   SHARED_RESOURCES_NAMESPACE: kargo-shared-resources
@@ -8829,7 +8829,7 @@ spec:
   template:
     metadata:
       annotations:
-        configmap/checksum: 20ec95a0ac3f9d9055c831cac65147a8a60816f2a90d207907582731a62c20d5
+        configmap/checksum: a22c8481705f8451100efcbce15e0285063028406d654058b13d8db3264b7eb5
       labels:
         app.kubernetes.io/component: controller
         app.kubernetes.io/instance: kargo
