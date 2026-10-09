@@ -15,24 +15,3 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
-    - name: https
-      protocol: HTTPS
-      port: 443
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - group: ''
-            kind: Secret
-            name: argocd-tls
-            namespace: argocd
-          - group: ''
-            kind: Secret
-            name: project-a-tls
-            namespace: acme-project-a-prod
-          - group: ''
-            kind: Secret
-            name: kargo-tls
-            namespace: kargo
-      allowedRoutes:
-        namespaces:
-          from: All

@@ -133,9 +133,8 @@ server:
     enabled: true
     parentRefs:
       - group: gateway.networking.k8s.io
-        kind: Gateway
-        name: platform
-        namespace: envoy-gateway-system
+        kind: ListenerSet
+        name: argocd
         sectionName: https
     hostnames: [argocd.internal]
     rules:

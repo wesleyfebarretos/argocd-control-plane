@@ -1,0 +1,43 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-tls
+  namespace: argocd
+spec:
+  secretName: argocd-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: platform-selfsigned
+  dnsNames:
+    - argocd.internal
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: ListenerSet
+metadata:
+  name: argocd
+  labels:
+    app.kubernetes.io/name: argocd
+    app.kubernetes.io/instance: argocd-listener-set
+    app.kubernetes.io/component: networking
+    app.kubernetes.io/part-of: argocd
+    app.kubernetes.io/managed-by: argocd
+spec:
+  parentRef:
+    name: platform
+    kind: Gateway
+    group: gateway.networking.k8s.io
+    namespace: envoy-gateway-system
+  listeners:
+    - name: https
+      hostname: argocd.internal
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ""
+            kind: Secret
+            name: argocd-tls

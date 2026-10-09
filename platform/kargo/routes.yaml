@@ -1,0 +1,70 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kargo-tls
+spec:
+  secretName: kargo-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: platform-selfsigned
+  dnsNames:
+    - kargo.internal
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: ListenerSet
+metadata:
+  name: kargo
+  labels:
+    app.kubernetes.io/name: kargo
+    app.kubernetes.io/instance: kargo-listener-set
+    app.kubernetes.io/component: networking
+    app.kubernetes.io/part-of: kargo
+    app.kubernetes.io/managed-by: kargo
+spec:
+  parentRef:
+    name: platform
+    kind: Gateway
+    group: gateway.networking.k8s.io
+    namespace: envoy-gateway-system
+  listeners:
+    - name: https
+      hostname: kargo.internal
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ""
+            kind: Secret
+            name: kargo-tls
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kargo
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: ListenerSet
+      name: kargo
+      sectionName: https
+  hostnames:
+    - kargo.internal
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /github/
+      backendRefs:
+        - name: kargo-external-webhooks-server
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: kargo-api
+          port: 80
