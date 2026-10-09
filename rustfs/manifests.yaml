@@ -21,11 +21,12 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: ListenerSet
 metadata:
-  app.kubernetes.io/component: networking
-  app.kubernetes.io/instance: rustfs-http-route
-  app.kubernetes.io/managed-by: argocd
-  app.kubernetes.io/name: rustfs
-  app.kubernetes.io/part-of: rustfs
+  labels:
+    app.kubernetes.io/component: networking
+    app.kubernetes.io/instance: rustfs-listener-set
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/name: rustfs
+    app.kubernetes.io/part-of: rustfs
   name: rustfs
 spec:
   listeners:
