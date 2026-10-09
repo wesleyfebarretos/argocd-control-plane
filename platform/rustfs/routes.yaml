@@ -17,11 +17,12 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: ListenerSet
 metadata:
   name: rustfs
-  app.kubernetes.io/name: rustfs
-  app.kubernetes.io/instance: rustfs-http-route
-  app.kubernetes.io/component: networking
-  app.kubernetes.io/part-of: rustfs
-  app.kubernetes.io/managed-by: argocd
+  labels:
+    app.kubernetes.io/name: rustfs
+    app.kubernetes.io/instance: rustfs-listener-set
+    app.kubernetes.io/component: networking
+    app.kubernetes.io/part-of: rustfs
+    app.kubernetes.io/managed-by: argocd
 spec:
   parentRef:
     name: platform
