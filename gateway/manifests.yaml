@@ -11,6 +11,9 @@ metadata:
   name: platform
   namespace: envoy-gateway-system
 spec:
+  allowedListeners:
+    namespaces:
+      from: All
   gatewayClassName: envoy-gateway
   listeners:
   - allowedRoutes:
@@ -35,10 +38,6 @@ spec:
         kind: Secret
         name: project-a-tls
         namespace: acme-project-a-prod
-      - group: ""
-        kind: Secret
-        name: rustfs-tls
-        namespace: rustfs
       - group: ""
         kind: Secret
         name: kargo-tls
