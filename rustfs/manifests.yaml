@@ -19,19 +19,31 @@ spec:
   secretName: rustfs-tls
 ---
 apiVersion: gateway.networking.k8s.io/v1
-kind: ReferenceGrant
+kind: ListenerSet
 metadata:
-  name: allow-platform-gateway-tls
-  namespace: rustfs
+  app.kubernetes.io/component: networking
+  app.kubernetes.io/instance: rustfs-http-route
+  app.kubernetes.io/managed-by: argocd
+  app.kubernetes.io/name: rustfs
+  app.kubernetes.io/part-of: rustfs
+  name: rustfs
 spec:
-  from:
-  - group: gateway.networking.k8s.io
+  listeners:
+  - hostname: rustfs.internal
+    name: https
+    port: 443
+    protocol: HTTPS
+    tls:
+      certificateRefs:
+      - group: ""
+        kind: Secret
+        name: rustfs-tls
+      mode: Terminate
+  parentRef:
+    group: gateway.networking.k8s.io
     kind: Gateway
+    name: platform
     namespace: envoy-gateway-system
-  to:
-  - group: ""
-    kind: Secret
-    name: rustfs-tls
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -48,9 +60,8 @@ spec:
   - rustfs.internal
   parentRefs:
   - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: platform
-    namespace: envoy-gateway-system
+    kind: ListenerSet
+    name: rustfs
     sectionName: https
   rules:
   - backendRefs:
