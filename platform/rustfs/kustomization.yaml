@@ -2,8 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
-  - certificate.yaml
-  - httproute.yaml
+  - routes.yaml
 helmCharts:
   - name: rustfs
     repo: https://charts.rustfs.com
