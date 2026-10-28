@@ -534,6 +534,7 @@ metadata:
 ---
 apiVersion: v1
 data:
+  application.namespaces: '*'
   applicationsetcontroller.enable.leader.election: "false"
   applicationsetcontroller.log.format: text
   applicationsetcontroller.log.level: info
@@ -566,51 +567,6 @@ metadata:
     app.kubernetes.io/version: v3.5.2
     helm.sh/chart: argo-cd-10.6.0
   name: argocd-cmd-params-cm
-  namespace: argocd
----
-apiVersion: v1
-data:
-  kustomized-helm.yaml: "apiVersion: argoproj.io/v1alpha1\nkind: ConfigManagementPlugin\nmetadata:\n
-    \ name: kustomized-helm\nspec:\n  generate:\n    args:\n    - |\n      set -eu\n
-    \     kustomize build --enable-helm --load-restrictor LoadRestrictionsNone\n    command:\n
-    \   - sh\n    - -c\n  init:\n    args:\n    - |\n      set -eu\n      (set -o
-    pipefail 2>/dev/null) && set -o pipefail || true\n  \n      kustomization_file=\"\"\n
-    \     for candidate in \"./kustomization.yaml\" \"./kustomization.yml\" \"./Kustomization\";
-    do\n        if [ -f \"${candidate}\" ]; then\n          kustomization_file=\"${candidate}\"\n
-    \         break\n        fi\n      done\n  \n      [ -n \"${kustomization_file}\"
-    ]\n      kustomization_dir=\"$(dirname \"${kustomization_file}\")\"\n      chart_home=\"$(awk
-    '\n        /^[[:space:]]*helmGlobals:[[:space:]]*$/ { in_globals=1; next }\n        in_globals
-    && /^[[:space:]]*chartHome:[[:space:]]*/ {\n          line=$0\n          sub(/^[[:space:]]*chartHome:[[:space:]]*/,
-    \"\", line)\n          gsub(/[\"'\\'' ]/, \"\", line)\n          print line\n
-    \         exit\n        }\n      ' \"${kustomization_file}\")\"\n      if [ -z
-    \"${chart_home}\" ]; then\n        chart_home=\"charts\"\n      fi\n      chart_home_dir=\"$(cd
-    \"${kustomization_dir}\" && cd \"${chart_home}\" && pwd -P)\"\n  \n      built_file=\"$(mktemp)\"\n
-    \     charts_file=\"$(mktemp)\"\n      trap 'rm -f \"${built_file}\" \"${charts_file}\"'
-    EXIT\n  \n      awk '\n        /^[[:space:]]*helmCharts:[[:space:]]*$/ { in_charts=1;
-    next }\n        in_charts && /^[[:space:]]*[A-Za-z0-9_]+:[[:space:]]*$/ && $0
-    !~ /^[[:space:]]*-[[:space:]]/ { in_charts=0 }\n        in_charts && /^[[:space:]]*-[[:space:]]*name:[[:space:]]*/
-    {\n          line=$0\n          sub(/^[[:space:]]*-[[:space:]]*name:[[:space:]]*/,
-    \"\", line)\n          gsub(/[\"'\\'' ]/, \"\", line)\n          if (line != \"\")
-    print line\n        }\n        in_charts && /^[[:space:]]*name:[[:space:]]*/ {\n
-    \         line=$0\n          sub(/^[[:space:]]*name:[[:space:]]*/, \"\", line)\n
-    \         gsub(/[\"'\\'' ]/, \"\", line)\n          if (line != \"\") print line\n
-    \       }\n      ' \"${kustomization_file}\" > \"${charts_file}\"\n  \n      while
-    IFS= read -r chart_name; do\n        [ -n \"${chart_name}\" ] || continue\n        chart_dir=\"${chart_home_dir}/${chart_name}\"\n
-    \       if grep -Fqx \"${chart_dir}\" \"${built_file}\" 2>/dev/null; then\n          continue\n
-    \       fi\n        printf '%s\\n' \"${chart_dir}\" >> \"${built_file}\"\n        helm
-    dependency build \"${chart_dir}\" 1>&2\n      done < \"${charts_file}\"\n    command:\n
-    \   - sh\n    - -c\n"
-kind: ConfigMap
-metadata:
-  labels:
-    app.kubernetes.io/component: repo-server
-    app.kubernetes.io/instance: argocd
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: argocd-cmp-cm
-    app.kubernetes.io/part-of: argocd
-    app.kubernetes.io/version: v3.5.2
-    helm.sh/chart: argo-cd-10.6.0
-  name: argocd-cmp-cm
   namespace: argocd
 ---
 apiVersion: v1
@@ -31700,6 +31656,7 @@ rules:
   verbs:
   - list
   - watch
+  - create
 - apiGroups:
   - ""
   resourceNames:
@@ -31768,6 +31725,15 @@ rules:
   - list
   - update
   - watch
+- apiGroups:
+  - argoproj.io
+  resources:
+  - applications
+  verbs:
+  - create
+  - delete
+  - update
+  - patch
 - apiGroups:
   - batch
   resources:
@@ -32420,7 +32386,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/cmd-params: de6159b914d27c3fc8ebf0073b78874fd62f3bd6e9b4c739080525a5aa2782eb
+        checksum/cmd-params: ca15bf3a4a18a1d40063452416750b4cac96156d0d469971b97e3a7f8cedbc15
       labels:
         app.kubernetes.io/component: applicationset-controller
         app.kubernetes.io/instance: argocd
@@ -32714,7 +32680,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/cmd-params: de6159b914d27c3fc8ebf0073b78874fd62f3bd6e9b4c739080525a5aa2782eb
+        checksum/cmd-params: ca15bf3a4a18a1d40063452416750b4cac96156d0d469971b97e3a7f8cedbc15
       labels:
         app.kubernetes.io/component: notifications-controller
         app.kubernetes.io/instance: argocd
@@ -32846,8 +32812,7 @@ spec:
     metadata:
       annotations:
         checksum/cm: e2784ad47c1c33ff33d797397e88d746ee2995fc625d5271ac69fb2ba53ec1df
-        checksum/cmd-params: de6159b914d27c3fc8ebf0073b78874fd62f3bd6e9b4c739080525a5aa2782eb
-        checksum/cmp-cm: 4abeec0b717fc0690fc86743df22d9286522c75e1dd60bd878f589bbd347227a
+        checksum/cmd-params: ca15bf3a4a18a1d40063452416750b4cac96156d0d469971b97e3a7f8cedbc15
       labels:
         app.kubernetes.io/component: repo-server
         app.kubernetes.io/instance: argocd
@@ -32872,7 +32837,6 @@ spec:
         - /usr/local/bin/argocd-repo-server
         - --port=8081
         - --metrics-port=8084
-        - --plugin-use-manifest-generate-paths
         env:
         - name: ARGOCD_REPO_SERVER_NAME
           value: argocd-repo-server
@@ -33189,24 +33153,6 @@ spec:
           name: plugins
         - mountPath: /tmp
           name: tmp
-      - command:
-        - /var/run/argocd/argocd-cmp-server
-        image: quay.io/argoproj/argocd:v3.5.2
-        imagePullPolicy: IfNotPresent
-        name: cmp-kustomized-helm
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 999
-        volumeMounts:
-        - mountPath: /var/run/argocd
-          name: var-files
-        - mountPath: /home/argocd/cmp-server/plugins
-          name: plugins
-        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-          name: argocd-cmp-cm
-          subPath: kustomized-helm.yaml
-        - mountPath: /tmp
-          name: cmp-tmp
       dnsPolicy: ClusterFirst
       initContainers:
       - args:
@@ -33236,11 +33182,6 @@ spec:
       serviceAccountName: argocd-repo-server
       terminationGracePeriodSeconds: 30
       volumes:
-      - configMap:
-          name: argocd-cmp-cm
-        name: argocd-cmp-cm
-      - emptyDir: {}
-        name: cmp-tmp
       - emptyDir: {}
         name: helm-working-dir
       - emptyDir: {}
@@ -33296,7 +33237,7 @@ spec:
     metadata:
       annotations:
         checksum/cm: e2784ad47c1c33ff33d797397e88d746ee2995fc625d5271ac69fb2ba53ec1df
-        checksum/cmd-params: de6159b914d27c3fc8ebf0073b78874fd62f3bd6e9b4c739080525a5aa2782eb
+        checksum/cmd-params: ca15bf3a4a18a1d40063452416750b4cac96156d0d469971b97e3a7f8cedbc15
       labels:
         app.kubernetes.io/component: server
         app.kubernetes.io/instance: argocd
@@ -33758,7 +33699,7 @@ spec:
     metadata:
       annotations:
         checksum/cm: e2784ad47c1c33ff33d797397e88d746ee2995fc625d5271ac69fb2ba53ec1df
-        checksum/cmd-params: de6159b914d27c3fc8ebf0073b78874fd62f3bd6e9b4c739080525a5aa2782eb
+        checksum/cmd-params: ca15bf3a4a18a1d40063452416750b4cac96156d0d469971b97e3a7f8cedbc15
       labels:
         app.kubernetes.io/component: dex-server
         app.kubernetes.io/instance: argocd
@@ -33997,7 +33938,7 @@ spec:
     metadata:
       annotations:
         checksum/cm: e2784ad47c1c33ff33d797397e88d746ee2995fc625d5271ac69fb2ba53ec1df
-        checksum/cmd-params: de6159b914d27c3fc8ebf0073b78874fd62f3bd6e9b4c739080525a5aa2782eb
+        checksum/cmd-params: ca15bf3a4a18a1d40063452416750b4cac96156d0d469971b97e3a7f8cedbc15
       labels:
         app.kubernetes.io/component: application-controller
         app.kubernetes.io/instance: argocd
