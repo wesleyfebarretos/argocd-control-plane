@@ -27,7 +27,8 @@ spec:
         app.kubernetes.io/name: "{{ .namespace }}-applications"
     spec:
       project: "{{ .project }}"
-      sources: "{{- toYaml .sources | nindent 8 }}"
+      sources:
+        {{- toYaml .sources | nindent 8 }}
       destination:
         server: https://kubernetes.default.svc
         namespace: "{{ .namespace }}"
