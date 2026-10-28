@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/argoproj/argo-cd/master/manifests/crds/applicationset-crd.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: dataplane-applications
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - list:
+        elements:
+          - namespace: url-shortener
+            project: url-shortener
+            sources:
+              - repoURL: https://github.com/wesleyfebarretos/url-shortener.git
+                path: "argocd"
+                targetRevision: main
+                directory:
+                  recurse: true
+  template:
+    metadata:
+      name: "{{ .namespace }}-applications"
+      labels:
+        app.kubernetes.io/name: "{{ .namespace }}-applications"
+    spec:
+      project: "{{ .project }}"
+      sources: |
+        {{- toYaml .sources | nindent 8 }}
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{ .namespace }}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+          - ApplyOutOfSyncOnly=true

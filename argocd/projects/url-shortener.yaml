@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: url-shortener
+  namespace: argocd
+spec:
+  description: Url-shortener project that allows only url-shortener namespaced resources
+  sourceRepos:
+    - https://github.com/wesleyfebarretos/url-shortener.git
+  destinations:
+    - namespace: url-shortener
+      server: https://kubernetes.default.svc
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  orphanedResources:
+    warn: false

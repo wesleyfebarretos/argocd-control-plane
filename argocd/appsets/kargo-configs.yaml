@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: kargo-configs
+  name: platform-kargo-configs
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -11,26 +11,23 @@ spec:
   goTemplateOptions: ["missingkey=error"]
   generators:
     - git:
-        repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
+        repoURL: https://github.com/wesleyfebarretos/argocd-control-plane.git
         revision: main
         directories:
-          - path: tenants/*/*/kargo
+          - path: projects-manifests/*/kargo
         values:
-          tenant: "{{ index .path.segments 1}}"
-          project: "{{ index .path.segments 2}}"
-          namespace: "{{ index .path.segments 1}}-{{ index .path.segments 2}}"
+          namespace: "{{ index .path.segments 1}}"
   template:
     metadata:
       name: "{{ .values.namespace }}-kargo-configs"
       labels:
         app.kubernetes.io/name: "{{ .values.namespace }}-kargo-configs"
-        tenant: "{{ .values.tenant }}"
         project: "{{ .values.project }}"
         environment: "shared"
     spec:
       project: kargo
       source:
-        repoURL: https://github.com/wesleyfebarretos/argocd-applications.git
+        repoURL: https://github.com/wesleyfebarretos/argocd-control-plane.git
         path: "{{ .path.path }}"
         targetRevision: main
       destination:

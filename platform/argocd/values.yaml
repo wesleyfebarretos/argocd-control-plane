@@ -7,7 +7,7 @@ configs:
     create: true # required — tells the chart to create the ConfigMap
     controller.diff.server.side: 'true'
     # To enable applications in any namespace uncomment the following lines
-    # application.namespaces: '*'
+    application.namespaces: '*'
     # applicationsetcontroller.namespaces: '*'
     # applicationsetcontroller.enable.scm.providers: false
   cm:
@@ -40,78 +40,79 @@ configs:
     application.resourceTrackingMethod: annotation
     # Enable kustomize build options to allow the use of helm charts
     kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
-  cmp:
-    create: true
-    plugins:
-      kustomized-helm:
-        init:
-          command: [sh, -c]
-          args:
-            - |
-              set -eu
-              (set -o pipefail 2>/dev/null) && set -o pipefail || true
+  # Plugin to enable helm to build charts when using helm + local charts
+  # cmp:
+  #   create: true
+  #   plugins:
+  #     kustomized-helm:
+  #       init:
+  #         command: [sh, -c]
+  #         args:
+  #           - |
+  #             set -eu
+  #             (set -o pipefail 2>/dev/null) && set -o pipefail || true
 
-              kustomization_file=""
-              for candidate in "./kustomization.yaml" "./kustomization.yml" "./Kustomization"; do
-                if [ -f "${candidate}" ]; then
-                  kustomization_file="${candidate}"
-                  break
-                fi
-              done
+  #             kustomization_file=""
+  #             for candidate in "./kustomization.yaml" "./kustomization.yml" "./Kustomization"; do
+  #               if [ -f "${candidate}" ]; then
+  #                 kustomization_file="${candidate}"
+  #                 break
+  #               fi
+  #             done
 
-              [ -n "${kustomization_file}" ]
-              kustomization_dir="$(dirname "${kustomization_file}")"
-              chart_home="$(awk '
-                /^[[:space:]]*helmGlobals:[[:space:]]*$/ { in_globals=1; next }
-                in_globals && /^[[:space:]]*chartHome:[[:space:]]*/ {
-                  line=$0
-                  sub(/^[[:space:]]*chartHome:[[:space:]]*/, "", line)
-                  gsub(/["'\'' ]/, "", line)
-                  print line
-                  exit
-                }
-              ' "${kustomization_file}")"
-              if [ -z "${chart_home}" ]; then
-                chart_home="charts"
-              fi
-              chart_home_dir="$(cd "${kustomization_dir}" && cd "${chart_home}" && pwd -P)"
+  #             [ -n "${kustomization_file}" ]
+  #             kustomization_dir="$(dirname "${kustomization_file}")"
+  #             chart_home="$(awk '
+  #               /^[[:space:]]*helmGlobals:[[:space:]]*$/ { in_globals=1; next }
+  #               in_globals && /^[[:space:]]*chartHome:[[:space:]]*/ {
+  #                 line=$0
+  #                 sub(/^[[:space:]]*chartHome:[[:space:]]*/, "", line)
+  #                 gsub(/["'\'' ]/, "", line)
+  #                 print line
+  #                 exit
+  #               }
+  #             ' "${kustomization_file}")"
+  #             if [ -z "${chart_home}" ]; then
+  #               chart_home="charts"
+  #             fi
+  #             chart_home_dir="$(cd "${kustomization_dir}" && cd "${chart_home}" && pwd -P)"
 
-              built_file="$(mktemp)"
-              charts_file="$(mktemp)"
-              trap 'rm -f "${built_file}" "${charts_file}"' EXIT
+  #             built_file="$(mktemp)"
+  #             charts_file="$(mktemp)"
+  #             trap 'rm -f "${built_file}" "${charts_file}"' EXIT
 
-              awk '
-                /^[[:space:]]*helmCharts:[[:space:]]*$/ { in_charts=1; next }
-                in_charts && /^[[:space:]]*[A-Za-z0-9_]+:[[:space:]]*$/ && $0 !~ /^[[:space:]]*-[[:space:]]/ { in_charts=0 }
-                in_charts && /^[[:space:]]*-[[:space:]]*name:[[:space:]]*/ {
-                  line=$0
-                  sub(/^[[:space:]]*-[[:space:]]*name:[[:space:]]*/, "", line)
-                  gsub(/["'\'' ]/, "", line)
-                  if (line != "") print line
-                }
-                in_charts && /^[[:space:]]*name:[[:space:]]*/ {
-                  line=$0
-                  sub(/^[[:space:]]*name:[[:space:]]*/, "", line)
-                  gsub(/["'\'' ]/, "", line)
-                  if (line != "") print line
-                }
-              ' "${kustomization_file}" > "${charts_file}"
+  #             awk '
+  #               /^[[:space:]]*helmCharts:[[:space:]]*$/ { in_charts=1; next }
+  #               in_charts && /^[[:space:]]*[A-Za-z0-9_]+:[[:space:]]*$/ && $0 !~ /^[[:space:]]*-[[:space:]]/ { in_charts=0 }
+  #               in_charts && /^[[:space:]]*-[[:space:]]*name:[[:space:]]*/ {
+  #                 line=$0
+  #                 sub(/^[[:space:]]*-[[:space:]]*name:[[:space:]]*/, "", line)
+  #                 gsub(/["'\'' ]/, "", line)
+  #                 if (line != "") print line
+  #               }
+  #               in_charts && /^[[:space:]]*name:[[:space:]]*/ {
+  #                 line=$0
+  #                 sub(/^[[:space:]]*name:[[:space:]]*/, "", line)
+  #                 gsub(/["'\'' ]/, "", line)
+  #                 if (line != "") print line
+  #               }
+  #             ' "${kustomization_file}" > "${charts_file}"
 
-              while IFS= read -r chart_name; do
-                [ -n "${chart_name}" ] || continue
-                chart_dir="${chart_home_dir}/${chart_name}"
-                if grep -Fqx "${chart_dir}" "${built_file}" 2>/dev/null; then
-                  continue
-                fi
-                printf '%s\n' "${chart_dir}" >> "${built_file}"
-                helm dependency build "${chart_dir}" 1>&2
-              done < "${charts_file}"
-        generate:
-          command: [sh, -c]
-          args:
-            - |
-              set -eu
-              kustomize build --enable-helm --load-restrictor LoadRestrictionsNone
+  #             while IFS= read -r chart_name; do
+  #               [ -n "${chart_name}" ] || continue
+  #               chart_dir="${chart_home_dir}/${chart_name}"
+  #               if grep -Fqx "${chart_dir}" "${built_file}" 2>/dev/null; then
+  #                 continue
+  #               fi
+  #               printf '%s\n' "${chart_dir}" >> "${built_file}"
+  #               helm dependency build "${chart_dir}" 1>&2
+  #             done < "${charts_file}"
+  #       generate:
+  #         command: [sh, -c]
+  #         args:
+  #           - |
+  #             set -eu
+  #             kustomize build --enable-helm --load-restrictor LoadRestrictionsNone
   rbac:
     create: true
     scopes: '[groups, email]'
@@ -150,34 +151,35 @@ server:
               #       sectionName: https
               #   hostnames:
               #     - grpc.argocd.internal
-repoServer:
-  extraArgs:
-    - --plugin-use-manifest-generate-paths
-  extraContainers:
-    - name: cmp-kustomized-helm
-      command:
-        - /var/run/argocd/argocd-cmp-server
-      image: '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
-      imagePullPolicy: IfNotPresent
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 999
-      volumeMounts:
-        - mountPath: /var/run/argocd
-          name: var-files
-        - mountPath: /home/argocd/cmp-server/plugins
-          name: plugins
-        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-          subPath: kustomized-helm.yaml
-          name: argocd-cmp-cm
-        - mountPath: /tmp
-          name: cmp-tmp
-  volumes:
-    - name: argocd-cmp-cm
-      configMap:
-        name: argocd-cmp-cm
-    - name: cmp-tmp
-      emptyDir: {}
+# Enabling argocd cmp in repo server
+# repoServer:
+#   extraArgs:
+#     - --plugin-use-manifest-generate-paths
+#   extraContainers:
+#     - name: cmp-kustomized-helm
+#       command:
+#         - /var/run/argocd/argocd-cmp-server
+#       image: '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (include "argo-cd.defaultTag" .) .Values.repoServer.image.tag }}'
+#       imagePullPolicy: IfNotPresent
+#       securityContext:
+#         runAsNonRoot: true
+#         runAsUser: 999
+#       volumeMounts:
+#         - mountPath: /var/run/argocd
+#           name: var-files
+#         - mountPath: /home/argocd/cmp-server/plugins
+#           name: plugins
+#         - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+#           subPath: kustomized-helm.yaml
+#           name: argocd-cmp-cm
+#         - mountPath: /tmp
+#           name: cmp-tmp
+#   volumes:
+#     - name: argocd-cmp-cm
+#       configMap:
+#         name: argocd-cmp-cm
+#     - name: cmp-tmp
+#       emptyDir: {}
 applicationSet:
   replicas: 1
 controller:
