@@ -6,7 +6,7 @@ metadata:
 spec:
   description: Kargo project that allows only kargo.akuity.io/v1alpha1 resources
   sourceRepos:
-    - https://github.com/wesleyfebarretos/argocd-applications.git
+    - https://github.com/wesleyfebarretos/argocd-control-plane.git
   destinations:
     - namespace: '*'
       server: https://kubernetes.default.svc
