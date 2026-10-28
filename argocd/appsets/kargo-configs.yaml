@@ -22,7 +22,7 @@ spec:
       name: "{{ .values.namespace }}-kargo-configs"
       labels:
         app.kubernetes.io/name: "{{ .values.namespace }}-kargo-configs"
-        project: "{{ .values.project }}"
+        project: "{{ .values.namespace }}"
         environment: "shared"
     spec:
       project: kargo
