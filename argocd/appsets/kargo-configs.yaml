@@ -19,7 +19,7 @@ spec:
           namespace: "{{ index .path.segments 1}}"
   template:
     metadata:
-      name: "{{ .values.namespace }}-kargo-configs"
+      name: "platform-{{ .values.namespace }}-kargo-configs"
       labels:
         app.kubernetes.io/name: "{{ .values.namespace }}-kargo-configs"
         project: "{{ .values.namespace }}"
