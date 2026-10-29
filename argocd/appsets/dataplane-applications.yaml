@@ -27,8 +27,14 @@ spec:
         app.kubernetes.io/name: "{{ .namespace }}-applications"
     spec:
       project: "{{ .project }}"
-      sources:
-        {{ .sources | toYaml | nindent 8 }}
+      sources: |
+        {{- range .sources }}
+        - repoURL: "{{ .repoURL }}"
+          path: "{{ .path }}"
+          targetRevision: "{{ .targetRevision }}"
+          directory:
+            recurse: {{ .directory.recurse }}
+        {{- end }}
       destination:
         server: https://kubernetes.default.svc
         namespace: "{{ .namespace }}"
