@@ -16,7 +16,7 @@ spec:
             project: url-shortener
             sources:
               - repoURL: https://github.com/wesleyfebarretos/url-shortener.git
-                path: "argocd"
+                path: argocd
                 targetRevision: main
                 directory:
                   recurse: true
@@ -27,14 +27,6 @@ spec:
         app.kubernetes.io/name: "{{ .namespace }}-applications"
     spec:
       project: "{{ .project }}"
-      sources: 
-        {{- range .sources }}
-        - repoURL: "{{ .repoURL }}"
-          path: "{{ .path }}"
-          targetRevision: "{{ .targetRevision }}"
-          directory:
-            recurse: {{ .directory.recurse }}
-        {{- end }}
       destination:
         server: https://kubernetes.default.svc
         namespace: "{{ .namespace }}"
@@ -46,3 +38,6 @@ spec:
           - CreateNamespace=true
           - ServerSideApply=true
           - ApplyOutOfSyncOnly=true
+  templatePatch: |
+    spec:
+      sources: {{ .sources | toJson }}
