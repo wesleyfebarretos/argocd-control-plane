@@ -27,7 +27,7 @@ spec:
         app.kubernetes.io/name: "{{ .namespace }}-applications"
     spec:
       project: "{{ .project }}"
-      sources: |
+      sources: 
         {{- range .sources }}
         - repoURL: "{{ .repoURL }}"
           path: "{{ .path }}"
