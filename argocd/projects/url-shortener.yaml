@@ -17,5 +17,8 @@ spec:
   namespaceResourceWhitelist:
     - group: '*'
       kind: '*'
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
   orphanedResources:
     warn: false
