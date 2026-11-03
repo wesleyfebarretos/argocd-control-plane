@@ -10,6 +10,8 @@ spec:
   destinations:
     - namespace: url-shortener
       server: https://kubernetes.default.svc
+    - namespace: url-shortener-*
+      server: https://kubernetes.default.svc
   namespaceResourceWhitelist:
     - group: '*'
       kind: '*'
