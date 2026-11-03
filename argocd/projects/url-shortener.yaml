@@ -7,6 +7,8 @@ spec:
   description: Url-shortener project that allows only url-shortener namespaced resources
   sourceRepos:
     - https://github.com/wesleyfebarretos/url-shortener.git
+  sourceNamespaces:
+    - url-shortener
   destinations:
     - namespace: url-shortener
       server: https://kubernetes.default.svc
