@@ -536,8 +536,10 @@ apiVersion: v1
 data:
   application.namespaces: '*'
   applicationsetcontroller.enable.leader.election: "false"
+  applicationsetcontroller.enable.scm.providers: "false"
   applicationsetcontroller.log.format: text
   applicationsetcontroller.log.level: info
+  applicationsetcontroller.namespaces: '*'
   commitserver.log.format: text
   commitserver.log.level: info
   controller.diff.server.side: "true"
@@ -32389,7 +32391,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/cmd-params: 3c411594a480870eee1e3e5d614bd897126b54d3112a87f8ddebc3a76cfc2454
+        checksum/cmd-params: 52b4feb598e2df31e38ee536aee77b0f8f16b977b2bae0c39cd503d3a275aeaa
       labels:
         app.kubernetes.io/component: applicationset-controller
         app.kubernetes.io/instance: argocd
@@ -32690,7 +32692,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/cmd-params: 3c411594a480870eee1e3e5d614bd897126b54d3112a87f8ddebc3a76cfc2454
+        checksum/cmd-params: 52b4feb598e2df31e38ee536aee77b0f8f16b977b2bae0c39cd503d3a275aeaa
       labels:
         app.kubernetes.io/component: notifications-controller
         app.kubernetes.io/instance: argocd
@@ -32823,7 +32825,7 @@ spec:
     metadata:
       annotations:
         checksum/cm: e3ccf8c540f1bf26c6ff67e2da0fa1a8cff16cd97f6f4ed38311dfed667c6076
-        checksum/cmd-params: 3c411594a480870eee1e3e5d614bd897126b54d3112a87f8ddebc3a76cfc2454
+        checksum/cmd-params: 52b4feb598e2df31e38ee536aee77b0f8f16b977b2bae0c39cd503d3a275aeaa
       labels:
         app.kubernetes.io/component: repo-server
         app.kubernetes.io/instance: argocd
@@ -33255,7 +33257,7 @@ spec:
     metadata:
       annotations:
         checksum/cm: e3ccf8c540f1bf26c6ff67e2da0fa1a8cff16cd97f6f4ed38311dfed667c6076
-        checksum/cmd-params: 3c411594a480870eee1e3e5d614bd897126b54d3112a87f8ddebc3a76cfc2454
+        checksum/cmd-params: 52b4feb598e2df31e38ee536aee77b0f8f16b977b2bae0c39cd503d3a275aeaa
       labels:
         app.kubernetes.io/component: server
         app.kubernetes.io/instance: argocd
@@ -33724,7 +33726,7 @@ spec:
     metadata:
       annotations:
         checksum/cm: e3ccf8c540f1bf26c6ff67e2da0fa1a8cff16cd97f6f4ed38311dfed667c6076
-        checksum/cmd-params: 3c411594a480870eee1e3e5d614bd897126b54d3112a87f8ddebc3a76cfc2454
+        checksum/cmd-params: 52b4feb598e2df31e38ee536aee77b0f8f16b977b2bae0c39cd503d3a275aeaa
       labels:
         app.kubernetes.io/component: dex-server
         app.kubernetes.io/instance: argocd
@@ -33963,7 +33965,7 @@ spec:
     metadata:
       annotations:
         checksum/cm: e3ccf8c540f1bf26c6ff67e2da0fa1a8cff16cd97f6f4ed38311dfed667c6076
-        checksum/cmd-params: 3c411594a480870eee1e3e5d614bd897126b54d3112a87f8ddebc3a76cfc2454
+        checksum/cmd-params: 52b4feb598e2df31e38ee536aee77b0f8f16b977b2bae0c39cd503d3a275aeaa
       labels:
         app.kubernetes.io/component: application-controller
         app.kubernetes.io/instance: argocd
