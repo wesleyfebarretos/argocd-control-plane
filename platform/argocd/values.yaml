@@ -8,8 +8,8 @@ configs:
     controller.diff.server.side: 'true'
     # To enable applications in any namespace uncomment the following lines
     application.namespaces: '*'
-    # applicationsetcontroller.namespaces: '*'
-    # applicationsetcontroller.enable.scm.providers: false
+    applicationsetcontroller.namespaces: '*'
+    applicationsetcontroller.enable.scm.providers: false
   cm:
     create: true
     admin.enabled: 'false'
